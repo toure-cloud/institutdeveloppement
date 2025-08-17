@@ -1,0 +1,232 @@
+{% extends 'acceuil/base.html' %}
+
+{% block title %}Gérer les Publications | Institut de Développement des Territoires{% endblock %}
+
+{% block content %}
+<div class="container-lg my-5">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="display-5 fw-bold text-primary mb-0">Gestion des Publications</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary rounded-pill">
+            <i class="bi bi-arrow-left me-2"></i>Retour au dashboard
+        </a>
+    </div>
+
+    <!-- Messages -->
+    {% include 'partials/messages.html' %}
+
+    <!-- Formulaire -->
+    <div class="card border-0 shadow-lg mb-5">
+        <div class="card-body p-4">
+            <form id="publication-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Titre -->
+                <div class="mb-4">
+                    <label for="titre" class="form-label fw-bold">Titre de l'article <span class="text-danger">*</span></label>
+                    <input type="text" name="titre" id="titre" 
+                           class="form-control form-control-lg" 
+                           placeholder="Titre percutant..." required>
+                    <div class="invalid-feedback">Veuillez saisir un titre valide</div>
+                </div>
+
+                <!-- Contenu -->
+                <div class="mb-4">
+                    <label for="contenu" class="form-label fw-bold">Contenu <span class="text-danger">*</span></label>
+                    <textarea name="contenu" id="contenu" 
+                              class="form-control" 
+                              rows="8"
+                              placeholder="Commencez à rédiger votre article..." 
+                              required></textarea>
+                    <div class="form-text">Utilisez le format Markdown pour la mise en forme</div>
+                </div>
+
+                <!-- Fichiers -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Pièces jointes</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="fichiers" name="fichiers" 
+                               multiple class="form-control" 
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                        <label for="fichiers" class="upload-label">
+                            <i class="bi bi-cloud-upload fs-1 text-muted"></i>
+                            <span class="d-block mt-2">Glissez-déposez ou cliquez pour sélectionner</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
+                    <i class="bi bi-send me-2"></i>Publier l'article
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prévisualisation -->
+    <div id="file-previews" class="row g-3 mb-5"></div>
+
+    <!-- Fichiers existants -->
+    {% if fichiers %}
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="h5 mb-0">Fichiers associés</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Nom</th>
+                            <th>Taille</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fichier in fichiers %}
+                        <tr>
+                            <td class="text-center">
+                                {% if fichier.file.url|slice:"-3:" == "pdf" %}
+                                <i class="bi bi-file-pdf fs-4 text-danger"></i>
+                                {% else %}
+                                <i class="bi bi-file-earmark fs-4 text-muted"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-truncate" style="max-width: 300px;">{{ fichier.file.name }}</td>
+                            <td>{{ fichier.file.size|filesizeformat }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ fichier.file.url }}" 
+                                       class="btn btn-sm btn-outline-primary" 
+                                       download
+                                       data-bs-toggle="tooltip" 
+                                       title="Télécharger">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ forloop.counter }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info shadow-sm">
+        <i class="bi bi-info-circle me-2"></i>Aucun fichier n'a été téléchargé pour le moment
+    </div>
+    {% endif %}
+</div>
+
+<!-- Style personnalisé -->
+<style>
+    .file-upload-wrapper {
+        position: relative;
+        border: 2px dashed #dee2e6;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-wrapper:hover {
+        border-color: #0d6efd;
+        background: rgba(13, 110, 253, 0.05);
+    }
+
+    .upload-label {
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        color: #6c757d;
+    }
+
+    #file-previews .preview-item {
+        position: relative;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+
+    #file-previews .preview-item:hover {
+        transform: translateY(-3px);
+    }
+
+    .preview-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+    }
+</style>
+
+<!-- Script amélioré -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fichiers');
+    const previewContainer = document.getElementById('file-previews');
+
+    fileInput.addEventListener('change', function(e) {
+        previewContainer.innerHTML = '';
+        Array.from(e.target.files).forEach(file => {
+            const reader = new FileReader();
+            const previewItem = document.createElement('div');
+            previewItem.className = 'col-6 col-md-4 col-lg-3 preview-item mb-3';
+
+            const fileType = file.type.split('/')[0];
+            const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+
+            previewItem.innerHTML = `
+                <div class="card border-0 shadow-sm h-100">
+                    ${fileType === 'image' ? 
+                        `<img src="#" alt="${file.name}" class="card-img-top object-fit-cover" style="height: 150px;">` : 
+                        `<div class="card-body text-center py-4">
+                            <i class="bi ${getFileIcon(file.type)} fs-1 text-muted"></i>
+                        </div>`}
+                    <div class="card-footer bg-transparent">
+                        <small class="d-block text-truncate">${file.name}</small>
+                        <small class="text-muted">${fileSize}</small>
+                    </div>
+                </div>
+                <span class="preview-badge">${fileType === 'image' ? 'Image' : file.type}</span>
+            `;
+
+            if (fileType === 'image') {
+                reader.onload = function(e) {
+                    previewItem.querySelector('img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            previewContainer.appendChild(previewItem);
+        });
+    });
+
+    function getFileIcon(type) {
+        const icons = {
+            'application/pdf': 'bi-file-pdf',
+            'application/msword': 'bi-file-word',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'bi-file-word',
+            'application/vnd.ms-excel': 'bi-file-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'bi-file-excel',
+            'default': 'bi-file-earmark'
+        };
+        return icons[type] || icons['default'];
+    }
+
+    // Activation des tooltips Bootstrap
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(t => new bootstrap.Tooltip(t));
+});
+</script>
+{% endblock %}

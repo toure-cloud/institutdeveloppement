@@ -1,0 +1,14 @@
+<!-- developpement/templates/components/filter-buttons.html -->
+<div class="filter-buttons btn-group" role="group">
+    <button type="button" 
+            class="btn btn-outline-primary active" 
+            data-filter="all"></button>
+    
+    {% for category in categories %}
+    <button type="button" 
+            class="btn btn-outline-primary" 
+            data-filter="{{ category.slug }}">
+        {{ category.name }}
+    </button>
+    {% endfor %}
+</div>

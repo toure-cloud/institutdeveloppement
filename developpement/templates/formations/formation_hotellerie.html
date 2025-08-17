@@ -1,0 +1,219 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- 🎓 Présentation -->
+    <section class="hero-section text-white text-center">
+        <div class="overlay"></div>
+        <div class="container position-relative">
+            <h1 class="display-4 fw-bold animate__animated animate__fadeInDown">Licence Professionnelle en Hôtellerie</h1>
+            <p class="lead animate__animated animate__fadeInUp">Institut de Développement des Territoires - Université de MAN</p>
+        </div>
+    </section>
+
+    <!-- ✅ Conditions d'Admission -->
+    <section class="container my-5 animate__animated animate__fadeInLeft">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body">
+                <h2 class="text-center text-primary fw-bold">
+                    <i class="fas fa-check-circle"></i> Conditions d'Admission
+                </h2>
+                <p class="text-center text-muted">L'accès aux formations de l'IDT est réservé aux candidats remplissant les critères suivants :</p>
+                <div class="row mt-4 text-center">
+                    <div class="col-md-6">
+                        <div class="info-box shadow-sm">
+                            <i class="fas fa-user-graduate text-primary"></i>
+                            <h5>Titulaires de Diplômes</h5>
+                            <p>Toute personne ayant une Licence ou un Diplôme équivalent en :</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> Sciences Sociales et Humaines</li>
+                                <li><i class="fas fa-check text-success"></i> Sciences Économiques</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box shadow-sm">
+                            <i class="fas fa-university text-warning"></i>
+                            <h5>Admission par Concours</h5>
+                            <p>L'accès aux formations se fait exclusivement par concours organisé par l'Université de Man.</p>
+                            <p><strong>Annonce des dates dès le 3 octobre 2025</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 📝 Méthode d'Inscription (améliorée) -->
+    <section class="container my-5 animate__animated animate__fadeInRight">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body">
+                <h2 class="text-center text-primary fw-bold">
+                    <i class="fas fa-tasks"></i> Méthode d'Inscription
+                </h2>
+                <div class="timeline">
+                    <div class="timeline-step">
+                        <div class="timeline-marker">1</div>
+                        <div class="timeline-content">
+                            <h3>Préinscription en ligne</h3>
+                            <p>Les préinscriptions seront ouvertes dès le <strong>3 octobre 2025</strong>.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-marker">2</div>
+                        <div class="timeline-content">
+                            <h3>Confirmation & Convocation</h3>
+                            <p>Les candidats recevront une convocation officielle.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-marker">3</div>
+                        <div class="timeline-content">
+                            <h3>Passage du Concours</h3>
+                            <p>Les épreuves se dérouleront selon le calendrier officiel.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-marker">4</div>
+                        <div class="timeline-content">
+                            <h3>Résultats & Admission</h3>
+                            <p>Les candidats retenus recevront leur confirmation d'inscription.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 📚 Contenu de la Formation -->
+    <section class="container my-5">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body">
+                <h2 class="text-center text-primary fw-bold">
+                    <i class="fas fa-book"></i> Contenu de la Formation
+                </h2>
+                <div class="row g-4 mt-4">
+                    <div class="col-md-6">
+                        <div class="info-box shadow-sm">
+                            <i class="fas fa-graduation-cap text-primary"></i>
+                            <h5>UE de Connaissances Fondamentales</h5>
+                            <ul>
+                                <li><strong>HIP6351 :</strong> Histoire de l'Hôtellerie</li>
+                                <li><strong>ICO6352 :</strong> Informatique appliquée à l’Hôtellerie</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box shadow-sm">
+                            <i class="fas fa-utensils text-success"></i>
+                            <h5>UE de Spécialité</h5>
+                            <ul>
+                                <li><strong>EVT6351 :</strong> Gestion des Services d'Accueil</li>
+                                <li><strong>EVT6352 :</strong> Normes d'Hygiène et Sécurité</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 📌 Bouton d'Inscription -->
+    <div class="text-center mt-5">
+        <a href="{% url 'inscription_formation' formation_type='hotellerie' %}" class="btn btn-lg btn-primary shadow-sm animate__animated animate__pulse animate__infinite">
+            Pre-inscription à la Formation
+        </a>
+    </div>
+</div>
+
+<!-- 🎨 Styles personnalisés -->
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --primary-hover: #0b5ed7;
+        --bg-gradient-start: #e3f2fd;
+        --bg-gradient-end: #ffffff;
+    }
+    
+    body { font-family: 'Poppins', sans-serif; }
+    
+    .hero-section {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        height: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .hero-section .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+    }
+    
+    .info-box {
+        text-align: center;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .info-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Timeline améliorée pour la méthode d'inscription */
+    .timeline {
+        position: relative;
+        margin: 40px 0;
+        padding-left: 40px;
+    }
+    .timeline::before {
+        content: "";
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary-color);
+    }
+    .timeline-step {
+        position: relative;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: flex-start;
+    }
+    .timeline-marker {
+        background-color: var(--primary-color);
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        position: absolute;
+        left: -20px;
+        z-index: 1;
+    }
+    .timeline-content {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        width: 100%;
+    }
+    .timeline-content h3 {
+        margin-top: 0;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'acceuil/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4 text-primary">Créer un Compte Auteur</h2>
+    <p class="text-center text-muted">Veuillez noter qu'une équipe vérifiera vos informations avant de vous donner accès aux publications.</p>
+
+    <!-- Affichage des messages -->
+    {% if messages %}
+    <div class="mt-4">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Formulaire de création de compte -->
+    <form method="POST" enctype="multipart/form-data" class="border p-4 shadow-lg rounded bg-white animate__animated animate__fadeIn">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control shadow-sm" }}
+                
+                <!-- Affichage des erreurs -->
+                {% if field.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in field.errors %}
+                        <small>{{ error }}</small><br>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <!-- Bouton de soumission -->
+        <button type="submit" class="btn btn-primary w-100 mt-3">
+            <i class="fas fa-user-plus"></i> Créer mon compte
+        </button>
+    </form>
+</div>
+
+<!-- Styles personnalisés -->
+<style>
+    /* Style global du formulaire */
+    .form-label {
+        color: #495057;
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+    .form-control {
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .btn-close {
+        background: none;
+        border: none;
+    }
+</style>
+
+<!-- Intégration des bibliothèques -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}

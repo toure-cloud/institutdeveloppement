@@ -1,0 +1,103 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .dashboard-container {
+        max-width: 900px;
+        margin: 50px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background: #007bff;
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+    }
+
+    .progress-container {
+        margin-top: 30px;
+    }
+
+    .progress-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .circle {
+        width: 40px;
+        height: 40px;
+        background: #ccc;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .completed {
+        background: #28a745 !important;
+    }
+
+    .step-text {
+        margin-left: 15px;
+        font-size: 16px;
+    }
+</style>
+
+<div class="container">
+    <div class="dashboard-container">
+        <!-- 📌 Profil du Candidat -->
+        <div class="profile-card">
+            <img src="{{ user.photo_identite.url }}" alt="Photo de profil" class="profile-pic">
+            <div>
+                <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                <p><strong>Numéro:</strong> {{ user.telephone }}</p>
+                <p><strong>Formation:</strong> {{ user.inscription.formation }}</p>
+            </div>
+        </div>
+
+        <!-- 🔄 Suivi des étapes -->
+        <h4 class="text-primary text-center">Suivi de l'Inscription</h4>
+        <div class="progress-container">
+            <div class="progress-step">
+                <div class="circle {% if user.inscription.etape >= 1 %}completed{% endif %}">1</div>
+                <div class="step-text">Dépôt des dossiers physiques</div>
+            </div>
+
+            <div class="progress-step">
+                <div class="circle {% if user.inscription.etape >= 2 %}completed{% endif %}">2</div>
+                <div class="step-text">Composition</div>
+            </div>
+
+            <div class="progress-step">
+                <div class="circle {% if user.inscription.etape >= 3 %}completed{% endif %}">3</div>
+                <div class="step-text">Résultats</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

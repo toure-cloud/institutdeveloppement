@@ -1,0 +1,18 @@
+<!-- developpement/templates/components/accordion-item.html -->
+<div class="accordion-item">
+    <h3 class="accordion-header">
+        <button class="accordion-button {% if not open %}collapsed{% endif %}" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#{{ id }}">
+            <i class="fas fa-{{ icon }} me-3"></i>{{ title }}
+        </button>
+    </h3>
+    <div id="{{ id }}" 
+         class="accordion-collapse collapse {% if open %}show{% endif %}" 
+         data-bs-parent="#missionAccordion">
+        <div class="accordion-body">
+            {{ content|safe }}
+        </div>
+    </div>
+</div>

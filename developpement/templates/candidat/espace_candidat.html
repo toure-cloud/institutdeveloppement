@@ -1,0 +1,281 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #6b8cae;
+        --dark-bg: #1a1e29;
+        --card-bg: #252b3a;
+        --text-color: #e0e5ec;
+        --hover-color: #3a5a80;
+    }
+
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: 12px;
+    }
+
+    .user-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 3rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(74, 111, 165, 0.3);
+    }
+
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-info {
+        margin-left: 2rem;
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-name {
+        font-size: 1.8rem;
+        margin: 0;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .user-status {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        background: rgba(74, 111, 165, 0.2);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .logout-btn {
+        background: transparent;
+        color: var(--text-color);
+        border: 1px solid var(--primary-color);
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .dashboard-card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border-color: rgba(74, 111, 165, 0.3);
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+    }
+
+    .card-title i {
+        margin-right: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    .card-content {
+        line-height: 1.7;
+        color: rgba(224, 229, 236, 0.8);
+    }
+
+    .card-content p {
+        margin-bottom: 0.8rem;
+    }
+
+    .card-content strong {
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background: var(--hover-color);
+        color: white;
+    }
+
+    .document-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .document-list li {
+        padding: 0.3rem 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .document-list i {
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .text-success {
+        color: #5cb85c;
+    }
+
+    @media (max-width: 768px) {
+        .user-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .user-info {
+            flex-direction: column;
+            margin-left: 0;
+            margin-top: 1rem;
+            align-items: center;
+        }
+        
+        .logout-btn {
+            margin-top: 1rem;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="user-header">
+        {% if inscription and inscription.photo_identite %}
+    <img src="{{ inscription.photo_identite.url }}" alt="Photo d'identité de {{ inscription.prenom }} {{ inscription.nom }}" class="user-avatar">
+{% else %}
+    <img src="{% static 'images/default-avatar.jpg' %}" alt="Photo profil par défaut" class="user-avatar">
+{% endif %}
+        
+        <div class="user-info">
+            <div>
+                <h1 class="user-name">{{ request.user.first_name }} {{ request.user.last_name }}</h1>
+                <span class="user-status">Candidat en {{ inscription.formation|title }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-cards">
+        <!-- Carte Informations Personnelles -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-user"></i> Informations Personnelles</h3>
+            <div class="card-content">
+                <p><strong>Email :</strong> {{ request.user.email }}</p>
+                <p><strong>Téléphone :</strong> {{ inscription.telephone|default:"Non renseigné" }}</p>
+                <p><strong>Date de naissance :</strong> {{ inscription.date_naissance|date:"d/m/Y"|default:"Non renseignée" }}</p>
+                <p><strong>CMU:</strong> {{ inscription.cmu|default:"Non renseignée" }}</p>
+            </div>
+            <a href="{% url 'modifier_profil' %}" class="action-btn">Modifier</a>
+        </div>
+
+        <!-- Carte Formation -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Emploi du temps</h3>
+            <div class="card-content">
+               
+                <p><strong>Date d'inscription :</strong> {{ candidat.date_inscription|date:"d/m/Y" }}</p>
+                <p><strong>Statut :</strong> {{ candidat.get_statut_display }}</p>
+                <p><strong>Prochaine session :</strong> {{ formation.prochaine_session|date:"d/m/Y"|default:"Non programmée" }}</p>
+            </div>
+            <a href="{% url 'details_formation' %}" class="action-btn">Voir le programme</a>
+        </div>
+
+        <!-- Carte Documents -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-file-alt"></i> Mes Documents</h3>
+            <div class="card-content">
+                <ul class="document-list">
+                    <li><i class="fas {% if candidat.cv %}fa-check-circle text-success{% else %}fa-times-circle{% endif %}"></i> CV</li>
+                    <li><i class="fas {% if candidat.lettre_motivation %}fa-check-circle text-success{% else %}fa-times-circle{% endif %}"></i> Lettre de motivation</li>
+                    <li><i class="fas {% if candidat.diplomes %}fa-check-circle text-success{% else %}fa-times-circle{% endif %}"></i> Diplômes</li>
+                    <li><i class="fas {% if candidat.cni %}fa-check-circle text-success{% else %}fa-times-circle{% endif %}"></i> Pièce d'identité</li>
+                </ul>
+            </div>
+            <a href="{% url 'gerer_documents' %}" class="action-btn">Gérer mes documents</a>
+        </div>
+
+        <!-- Carte Sécurité -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-lock"></i> Sécurité</h3>
+            <div class="card-content">
+                <p><strong>Dernière connexion :</strong> {{ request.user.last_login|date:"d/m/Y à H:i"|default:"Jamais" }}</p>
+                <p><strong>Statut du compte :</strong> Actif</p>
+                <p><strong>Membre depuis :</strong> {{ request.user.date_joined|date:"d/m/Y" }}</p>
+            </div>
+            <a href="{% url 'password_change' %}" class="action-btn">Changer le mot de passe</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animation douce au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.dashboard-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

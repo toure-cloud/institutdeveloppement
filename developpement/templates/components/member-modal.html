@@ -1,0 +1,59 @@
+<div class="modal fade" id="memberModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ member.full_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-4">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" 
+                         class="img-fluid rounded" 
+                         alt="{{ member.full_name }}">
+                    {% else %}
+                    <div class="placeholder-image bg-light rounded">
+                        <i class="fas fa-user-circle fa-5x text-muted"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    {% if member.title %}
+                    <p class="lead">{{ member.title }}</p>
+                    {% endif %}
+                    
+                    <div class="expertises mb-3">
+                        {% for expertise in member.expertises.all %}
+                        <span class="badge bg-primary me-1">{{ expertise.name }}</span>
+                        {% empty %}
+                        <span class="text-muted">Aucune expertise renseignée</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="bio">
+                        {% if member.bio %}
+                        {{ member.bio|linebreaks }}
+                        {% else %}
+                        <p class="text-muted">Biographie non disponible</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+const memberModal = document.getElementById('memberModal');
+
+memberModal.addEventListener('hidden.bs.modal', function () {
+    if (memberModal.classList.contains('needs-reload')) {
+        window.location.reload();
+        memberModal.classList.remove('needs-reload');
+    }
+});
+
+// Quand une action nécessite une actualisation
+function markForReload() {
+    memberModal.classList.add('needs-reload');
+}
+</script>

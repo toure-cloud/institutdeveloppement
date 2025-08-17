@@ -1,0 +1,204 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 2rem 0;
+    }
+    .login-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+    .login-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+    .card-body {
+        padding: 2.5rem;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+    }
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+    }
+    .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+    }
+    .btn-login:hover {
+        background: linear-gradient(135deg, #5a6fd1 0%, #6a4299 100%);
+        transform: translateY(-2px);
+    }
+    .forgot-password {
+        color: #667eea;
+        transition: color 0.3s;
+    }
+    .forgot-password:hover {
+        color: #764ba2;
+        text-decoration: none;
+    }
+    .modal-error {
+        border-left: 5px solid #dc3545;
+    }
+    .icon-input {
+        position: relative;
+    }
+    .icon-input i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #667eea;
+    }
+    .icon-input input {
+        padding-left: 40px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content modal-error">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Erreur de connexion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger mb-0">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>{{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="login-card card">
+                    <div class="card-header">
+                        <h2 class="mb-0"><i class="bi bi-person-badge me-2"></i>Espace Candidat</h2>
+                        <p class="mb-0 mt-2">Accédez à votre espace personnel</p>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'candidat_login_page' %}?next={{ next|urlencode }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                            
+                            <!-- Email Field -->
+                            <div class="mb-4 icon-input">
+                                <i class="bi bi-envelope-fill"></i>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="username" 
+                                       placeholder="Adresse email" 
+                                       required>
+                            </div>
+                            
+                            <!-- Password Field -->
+                            <div class="mb-4 icon-input">
+                                <i class="bi bi-lock-fill"></i>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Mot de passe" 
+                                       required>
+                            </div>
+                            
+                            <!-- Remember Me Checkbox -->
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember">
+                                <label class="form-check-label" for="remember">Se souvenir de moi</label>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-login text-black">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                                </button>
+                            </div>
+                            
+                            <!-- Links Section -->
+                            <div class="text-center">
+                                <a href="{% url 'password_reset' %}" class="forgot-password d-block mb-2">
+                                    <i class="bi bi-question-circle me-1"></i>Mot de passe oublié ?
+                                </a>
+                                <p class="mb-0">Pas encore inscrit ? 
+                                    <a href="{% url 'formation'%}" class="text-primary">Créer un compte</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show error modal if there are error messages
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if messages %}
+            let hasErrors = false;
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    hasErrors = true;
+                {% endif %}
+            {% endfor %}
+            
+            if (hasErrors) {
+                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                errorModal.show();
+            }
+        {% endif %}
+        
+        // Add animation to form inputs on focus
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('i').style.color = '#764ba2';
+                this.style.borderColor = '#764ba2';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('i').style.color = '#667eea';
+                this.style.borderColor = '#e0e0e0';
+            });
+        });
+    });
+</script>
+{% endblock %}

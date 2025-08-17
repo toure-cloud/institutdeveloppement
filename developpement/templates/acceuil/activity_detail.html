@@ -1,0 +1,49 @@
+{% extends "acceuil/base.html" %}
+{% load static %}
+{% block title %}{{ activity.title }}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <!-- Titre principal -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">{{ activity.title }}</h1>
+            <p class="text-muted fst-italic" style="font-size: 13px;">
+                {{ activity.category|capfirst }} &bullet;
+                {{ activity.date|date:"d F Y " }} &bullet;
+                {{ activity.location }}
+            </p>
+            {{ activity.status_badge|safe }}
+        </div>
+
+        <!-- Contenu en deux colonnes -->
+        <div class="row align-items-start">
+            <!-- Colonne image -->
+            <div class="col-md-5 mb-4 mb-md-0">
+                <img src="{{ activity.image.url }}" alt="{{ activity.title }}"
+                     class="img-fluid rounded shadow" style="max-height: 400px; object-fit: cover;">
+            </div>
+
+            <!-- Colonne texte -->
+            <div class="col-md-7">
+                <h5 class="mb-3">Description rapide</h5>
+                <p class="text-muted fst-italic" style="font-size: 13px;">
+                    {{ activity.short_description }}
+                </p>
+
+                <h5 class="mt-4 mb-3">Détails de l'activité</h5>
+                <p class="fst-italic text-dark" style="font-size: 13px;">
+                    {{ activity.description|linebreaks }}
+                </p>
+
+                {% if activity.external_link %}
+                <a href="{{ activity.external_link }}" target="_blank"
+                   class="btn btn-outline-primary rounded-pill shadow-sm mt-4">
+                    En savoir plus <i class="fas fa-external-link-alt ms-2"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

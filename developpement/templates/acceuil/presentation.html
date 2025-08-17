@@ -1,0 +1,299 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .sidebar { min-width: 250px; }
+        .notification-dot { position: absolute; top: -5px; right: -5px; }
+        .drop-zone { border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.3s; }
+        .drop-zone:hover { border-color: #3b82f6; }
+        .active-tab { background-color: #e5e7eb; font-weight: bold; }
+        .btn-primary { transition: background-color 0.3s, transform 0.2s; }
+        .btn-primary:hover { background-color: #2563eb; transform: scale(1.05); }
+        .btn-secondary { transition: background-color 0.3s, transform 0.2s; }
+        .btn-secondary:hover { background-color: #4b5563; transform: scale(1.05); }
+        .btn-danger { transition: background-color 0.3s, transform 0.2s; }
+        .btn-danger:hover { background-color: #dc2626; transform: scale(1.05); }
+        .input-field { transition: border-color 0.3s, box-shadow 0.3s; }
+        .input-field:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+        .tab-content { animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body { background: linear-gradient(to bottom, #f3f4f6, #ffffff); }
+        header { background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; }
+        footer { background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; }
+        .modal { transition: opacity 0.3s ease-in-out; }
+        .modal-open { overflow: hidden; }
+        .modal-overlay { background: rgba(0, 0, 0, 0.5); }
+    </style>
+
+
+    <!-- Main Content -->
+    {% if user.is_authenticated and inscription %}
+    <main class="container mx-auto p-4 flex flex-col md:flex-row gap-6">
+        <!-- Sidebar -->
+        <aside class="sidebar bg-white p-6 rounded-lg shadow-lg">
+            <div class="text-center mb-6">
+                <h2 class="text-xl font-bold text-blue-600">Espace Candidat</h2>
+                <p class="text-gray-600">Bienvenue, {{ inscription.nom }} {{ inscription.prenom }}</p>
+            </div>
+            <div class="text-center mb-6">
+                <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="w-24 h-24 rounded-full mx-auto mb-2 shadow-md">
+                <p class="font-semibold text-blue-800">{{ inscription.nom }} {{ inscription.prenom }}</p>
+                <p class="text-gray-600">{{ inscription.formation }}</p>
+                <p class="text-gray-500">ID: {{ inscription.id }}</p>
+                <button class="text-blue-500 hover:underline mt-2 transition">Changer la photo</button>
+            </div>
+            <nav class="space-y-2">
+                <a href="#profil" class="block p-2 rounded hover:bg-gray-200 active-tab transition">Profil</a>
+                <a href="#documents" class="block p-2 rounded hover:bg-gray-200 transition">Documents</a>
+                <a href="#notifications" class="block p-2 rounded hover:bg-gray-200 relative transition">
+                    Notifications
+                    <span class="notification-dot bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                </a>
+                <a href="#messagerie" class="block p-2 rounded hover:bg-gray-200 transition">Messagerie</a>
+                <a href="#parametres" class="block p-2 rounded hover:bg-gray-200 transition">Paramètres</a>
+                <a href="{% url 'logout' %}" class="block p-2 rounded hover:bg-gray-200 transition">Déconnexion</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="flex-1 bg-white p-6 rounded-lg shadow-lg">
+            <div id="profil" class="tab-content">
+                <h3 class="text-lg font-bold mb-4 text-blue-600">Informations personnelles</h3>
+                <form class="space-y-4" method="POST" action="{% url 'update_profile' %}">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700">Nom</label>
+                            <input type="text" name="nom" value="{{ inscription.nom }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Prénom</label>
+                            <input type="text" name="prenom" value="{{ inscription.prenom }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Email</label>
+                            <input type="email" name="email" value="{{ inscription.email }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Téléphone</label>
+                            <input type="text" name="telephone" value="{{ inscription.telephone }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Sexe</label>
+                            <select name="sexe" class="w-full p-2 border rounded input-field">
+                                <option value="M" {% if inscription.sexe == 'M' %}selected{% endif %}>Masculin</option>
+                                <option value="F" {% if inscription.sexe == 'F' %}selected{% endif %}>Féminin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700">Date de naissance</label>
+                            <input type="date" name="date_naissance" value="{{ inscription.date_naissance }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Lieu de naissance</label>
+                            <input type="text" name="lieu_naissance" value="{{ inscription.lieu_naissance }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Numéro CMU</label>
+                            <input type="text" name="cmu" value="{{ inscription.cmu }}" class="w-full p-2 border rounded input-field">
+                            <label class="block text-gray-700">Numéro CNI</label>
+                            <input type="text" name="cni" value="{{ inscription.cni }}" class="w-full p-2 border rounded input-field">
+                        </div>
+                    </div>
+                    <div class="flex space-x-4 mt-4">
+                        <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded btn-secondary">Annuler</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+                <h3 class="text-lg font-bold mt-6 mb-4 text-blue-600">Informations académiques</h3>
+                <div class="space-y-2 bg-gray-50 p-4 rounded-lg shadow-inner">
+                    <p><strong>Formation choisie :</strong> {{ inscription.formation }}</p>
+                    <p><strong>Tableau BAC :</strong> {{ inscription.table_bac }}</p>
+                    <p><strong>Numéro BAC :</strong> {{ inscription.numero_bac }}</p>
+                    <p><strong>École du diplôme :</strong> {{ inscription.ecole_diplome }}</p>
+                    <p><strong>Date d'inscription :</strong> {{ inscription.date_inscription|date:"d/m/Y" }}</p>
+                    <p><strong>Statut de la candidature :</strong> En cours de traitement</p>
+                </div>
+            </div>
+
+            <div id="documents" class="tab-content hidden">
+                <h3 class="text-lg font-bold mb-4 text-blue-600">Mes documents</h3>
+                <p class="text-gray-600 mb-4">Vous pouvez télécharger les documents fournis par l'administration et déposer les documents demandés.</p>
+                <h4 class="font-semibold mb-2 text-gray-800">Documents disponibles</h4>
+                <div class="space-y-2">
+                    {% if inscription.bac %}
+                    <div class="flex justify-between items-center p-2 border rounded bg-gray-50 hover:bg-gray-100 transition">
+                        <span>Diplôme du BAC (PDF - {{ inscription.bac.size|filesizeformat }})</span>
+                        <a href="{{ inscription.bac.url }}" class="text-blue-500 hover:underline">Télécharger</a>
+                    </div>
+                    {% else %}
+                    <div class="flex justify-between items-center p-2 border rounded bg-gray-50 hover:bg-gray-100 transition">
+                        <span>Diplôme du BAC (Document non fourni)</span>
+                        <span class="text-red-500">Requis</span>
+                    </div>
+                    {% endif %}
+                    {% if inscription.diplome %}
+                    <div class="flex justify-between items-center p-2 border rounded bg-gray-50 hover:bg-gray-100 transition">
+                        <span>Diplôme (PDF - {{ inscription.diplome.size|filesizeformat }})</span>
+                        <a href="{{ inscription.diplome.url }}" class="text-blue-500 hover:underline">Télécharger</a>
+                    </div>
+                    {% else %}
+                    <div class="flex justify-between items-center p-2 border rounded bg-gray-50 hover:bg-gray-100 transition">
+                        <span>Diplôme (Document non fourni)</span>
+                        <span class="text-red-500">Requis</span>
+                    </div>
+                    {% endif %}
+                    {% if inscription.extrait_naissance %}
+                    <div class="flex justify-between items-center p-2 border rounded bg-gray-50 hover:bg-gray-100 transition">
+                        <span>Extrait de naissance (PDF - {{ inscription.extrait_naissance.size|filesizeformat }})</span>
+                        <a href="{{ inscription.extrait_naissance.url }}" class="text-blue-500 hover:underline">Télécharger</a>
+                    </div>
+                    {% else %}
+                    <div class="flex justify-between items-center p-2 border rounded bg-gray-50 hover:bg-gray-100 transition">
+                        <span>Extrait de naissance (Document non fourni)</span>
+                        <span class="text-red-500">Requis</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <h4 class="font-semibold mt-4 mb-2 text-gray-800">Déposer un document</h4>
+                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_document' %}">
+                    {% csrf_token %}
+                    <div class="drop-zone mb-4 bg-gray-50 rounded-lg">Glissez-déposez votre fichier ici ou cliquez pour sélectionner<br>Formats acceptés : PDF, JPG, PNG (max. 5MB)</div>
+                    <div class="space-y-2">
+                        <label class="block text-gray-700">Type de document</label>
+                        <select name="document_type" class="w-full p-2 border rounded input-field">
+                            <option value="">Choisir un type</option>
+                            <option value="bac">Diplôme du BAC</option>
+                            <option value="diplome">Diplôme</option>
+                            <option value="extrait">Extrait de naissance</option>
+                            <option value="autre">Autre document</option>
+                        </select>
+                        <label class="block text-gray-700">Fichier</label>
+                        <input type="file" name="file" class="w-full p-2 border rounded input-field" accept=".pdf,.jpg,.png">
+                        <label class="block text-gray-700">Commentaire (optionnel)</label>
+                        <textarea name="comment" class="w-full p-2 border rounded input-field"></textarea>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded btn-primary">Envoyer le document</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="notifications" class="tab-content hidden">
+                <h3 class="text-lg font-bold mb-4 text-blue-600">Notifications</h3>
+                <button class="px-4 py-2 bg-blue-500 text-white rounded mb-4 btn-primary">Tout marquer comme lu</button>
+                <div class="space-y-4">
+                    <div class="p-4 border rounded bg-gray-50 hover:shadow-md transition">
+                        <h4 class="font-semibold text-gray-800">Convocation disponible</h4>
+                        <p class="text-gray-600 text-sm">Aujourd'hui, 10:30</p>
+                        <p>Votre convocation pour l'examen d'entrée est maintenant disponible en téléchargement dans l'onglet Documents.</p>
+                        <a href="#" class="text-blue-500 hover:underline">Document joint</a>
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50 hover:shadow-md transition">
+                        <h4 class="font-semibold text-gray-800">Document manquant</h4>
+                        <p class="text-gray-600 text-sm">Hier, 15:45</p>
+                        <p>Votre copie de diplôme n'a pas été reçue. Veuillez la transmettre dans les plus brefs délais via l'onglet Documents.</p>
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50 hover:shadow-md transition">
+                        <h4 class="font-semibold text-gray-800">Confirmation d'inscription</h4>
+                        <p class="text-gray-600 text-sm">{{ inscription.date_inscription|date:"d/m/Y" }}</p>
+                        <p>Votre inscription a bien été enregistrée. Numéro de dossier : {{ inscription.id }}</p>
+                    </div>
+                </div>
+                <a href="#" class="block text-center text-blue-500 hover:underline mt-4 transition">Voir toutes les notifications</a>
+            </div>
+
+            <div id="messagerie" class="tab-content hidden">
+                <h3 class="text-lg font-bold mb-4 text-blue-600">Messagerie</h3>
+                <div class="space-y-4">
+                    <div class="p-4 border rounded bg-gray-50 hover:shadow-md transition">
+                        <p class="font-semibold text-gray-800">Service Admission <span class="text-gray-600 text-sm">10:30</span></p>
+                        <p>Bonjour {{ inscription.prenom }}, comment pouvons-nous vous aider ?</p>
+                    </div>
+                    <div class="p-4 border rounded bg-blue-50 hover:shadow-md transition">
+                        <p class="font-semibold text-gray-800">Vous <span class="text-gray-600 text-sm">10:35</span></p>
+                        <p>Je souhaiterais savoir quand seront publiés les résultats de l'examen d'entrée.</p>
+                    </div>
+                    <div class="p-4 border rounded bg-gray-50 hover:shadow-md transition">
+                        <p class="font-semibold text-gray-800">Service Admission <span class="text-gray-600 text-sm">10:40</span></p>
+                        <p>Les résultats seront publiés dans 15 jours. Vous recevrez une notification par email et dans votre espace candidat dès qu'ils seront disponibles.</p>
+                    </div>
+                </div>
+                <form class="mt-4" method="POST" action="{% url 'send_message' %}">
+                    {% csrf_token %}
+                    <textarea name="message" class="w-full p-2 border rounded input-field" placeholder="Votre message..."></textarea>
+                    <p class="text-gray-600 text-sm">Réponse généralement dans les 24 heures ouvrables</p>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded mt-2 btn-primary">Envoyer</button>
+                </form>
+            </div>
+
+            <div id="parametres" class="tab-content hidden">
+                <h3 class="text-lg font-bold mb-4 text-blue-600">Paramètres du compte</h3>
+                <h4 class="font-semibold mb-2 text-gray-800">Changer le mot de passe</h4>
+                <form class="space-y-2" method="POST" action="{% url 'change_password' %}">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-gray-700">Mot de passe actuel</label>
+                        <input type="password" name="old_password" class="w-full p-2 border rounded input-field">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Nouveau mot de passe</label>
+                        <input type="password" name="new_password1" class="w-full p-2 border rounded input-field">
+                        <p class="text-gray-600 text-sm">Minimum 8 caractères avec au moins 1 majuscule, 1 minuscule et 1 chiffre</p>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Confirmer le nouveau mot de passe</label>
+                        <input type="password" name="new_password2" class="w-full p-2 border rounded input-field">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded btn-primary">Changer le mot de passe</button>
+                </form>
+                <h4 class="font-semibold mt-6 mb-2 text-red-600">Zone dangereuse</h4>
+                <p class="text-gray-600 mb-4">La suppression de votre compte est irréversible. Toutes vos données seront perdues.</p>
+                <button onclick="document.getElementById('suppression').classList.remove('hidden'); document.getElementById('parametres').classList.add('hidden');" class="px-4 py-2 bg-red-500 text-white rounded btn-danger">Supprimer mon compte</button>
+            </div>
+
+            <div id="suppression" class="tab-content hidden">
+                <h3 class="text-lg font-bold mb-4 text-blue-600">Confirmer la suppression</h3>
+                <p class="text-gray-600 mb-4">Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action ne peut pas être annulée. Toutes vos données seront perdues et vous ne pourrez plus accéder à votre espace candidat.</p>
+                <form method="POST" action="{% url 'delete_account' %}">
+                    {% csrf_token %}
+                    <label class="inline-flex items-center text-gray-700">
+                        <input type="checkbox" name="confirm" class="mr-2" required>
+                        Je confirme vouloir supprimer mon compte
+                    </label>
+                    <div class="flex space-x-4 mt-4">
+                        <button type="button" onclick="document.getElementById('suppression').classList.add('hidden'); document.getElementById('parametres').classList.remove('hidden');" class="px-4 py-2 bg-gray-500 text-white rounded btn-secondary">Annuler</button>
+                        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded btn-danger">Supprimer définitivement</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+    {% elif user.is_authenticated %}
+    <main class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h3 class="text-lg font-bold mb-4 text-red-600">Aucune inscription trouvée</h3>
+            <p class="text-gray-600">Vous n'avez pas encore d'inscription associée à votre compte. Veuillez vous inscrire pour accéder à l'espace candidat.</p>
+            <a href="{% url 'formation' %}" class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded btn-primary">S'inscrire</a>
+        </div>
+    </main>
+    {% endif %}
+
+ 
+
+    <script>
+        // Tab navigation
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                if (targetId !== 'deconnexion') {
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+                    document.getElementById(targetId).classList.remove('hidden');
+                    document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active-tab'));
+                    this.classList.add('active-tab');
+                }
+            });
+        });
+
+        // Set default tab
+        if (document.getElementById('profil')) {
+            document.getElementById('profil').classList.remove('hidden');
+            document.querySelector('.sidebar a[href="#profil"]').classList.add('active-tab');
+        }
+
+        // Modal control
+        {% if not user.is_authenticated %}
+        document.body.classList.add('modal-open');
+        document.querySelector('.modal').style.opacity = '1';
+        document.querySelector('.modal').style.pointerEvents = 'auto';
+        {% endif %}
+    </script>
+{% endblock %}

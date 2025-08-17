@@ -1,0 +1,40 @@
+{% extends 'acceuil/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4 text-danger">Auteurs en attente de validation</h2>
+
+    {% if auteurs %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Téléphone</th>
+                    <th>Profession</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for auteur in auteurs %}
+                    <tr>
+                        <td>{{ auteur.nom }}</td>
+                        <td>{{ auteur.prenom }}</td>
+                        <td>{{ auteur.telephone }}</td>
+                        <td>{{ auteur.profession }}</td>
+                        <td>
+                            <a href="{% url 'valider_auteur' auteur.id %}" class="btn btn-success btn-sm">Valider</a>
+                            <form action="{% url 'supprimer_auteur' auteur.id %}" method="post" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet auteur ?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-muted text-center">Aucun auteur en attente de validation.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'acceuil/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <!-- Title Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4">{{ publication.titre }}</h1>
+        <p class="text-muted">
+            Publié le <span class="fw-bold">{{ publication.date_publication|date:"d M Y" }}</span>
+            par <span class="fw-bold">{{ publication.auteur.nom }} {{ publication.auteur.prenom }}</span>
+        </p>
+        <hr class="w-25 mx-auto">
+    </div>
+
+    <!-- Main Content -->
+    <div class="row gy-4">
+        <!-- Main Column -->
+        <div class="col-lg-8">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <!-- Image principale -->
+                    {% if publication.image %}
+                        <img src="{{ publication.image.url }}" class="img-fluid rounded mb-4" alt="Image principale">
+                    {% endif %}
+
+                    <!-- Résumé -->
+                    <h3 class="text-primary mb-3">Résumé</h3>
+                    <p class="text-justify">{{ publication.resume }}</p>
+
+                    <!-- Contenu -->
+                    <h3 class="text-primary mt-5 mb-3">Contenu de la Publication</h3>
+                    <p class="text-justify">{{ publication.contenu|linebreaks }}</p>
+
+                    <!-- Images supplémentaires -->
+                    {% if images %}
+                        <h3 class="text-primary mt-5 mb-3">Images supplémentaires</h3>
+                        <div class="row g-3">
+                            {% for image in images %}
+                                <div class="col-sm-6 col-md-4">
+                                    <img src="{{ image.image.url }}" class="img-fluid rounded shadow-sm" alt="Image supplémentaire">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mt-4">Aucune image supplémentaire.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Détails -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-body">
+                    <h4 class="text-primary">Détails</h4>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item">
+                            <strong>Auteur :</strong> {{ publication.auteur.nom }} {{ publication.auteur.prenom }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Date de Publication :</strong> {{ publication.date_publication|date:"d M Y" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Journal :</strong> {{ publication.journal }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Téléchargement -->
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <h4 class="text-primary">Téléchargement</h4>
+                    {% if publication.fichier %}
+                        <a href="{{ publication.fichier.url }}" class="btn btn-primary w-100 mt-3">
+                            <i class="bi bi-download"></i> Télécharger le PDF
+                        </a>
+                    {% else %}
+                        <p class="text-muted mt-3">Aucun fichier disponible.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

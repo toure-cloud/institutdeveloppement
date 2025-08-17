@@ -1,0 +1,207 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block title %}
+    Formations - Mon Application
+{% endblock %}
+
+{% block content %}
+<!-- HEADER avec effet -->
+<header class="formations-header text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold animate__animated animate__fadeInDown">🎓 Nos Formations</h1>
+        <p class="lead animate__animated animate__fadeInUp">
+            Des programmes adaptés pour étudiants, professionnels et passionnés.
+        </p>
+    </div>
+</header>
+
+<div class="container mt-5">
+    <!-- Description principale -->
+    <p class="lead text-center text-muted mb-5 description-principale animate__animated animate__fadeInUp">
+        L’accès à nos formations se fait par voie de concours.<br>
+        Peuvent être candidats : les étudiants, les professionnels en reconversion ou toute personne motivée et titulaire d’une Licence (L3/BAC+3) en Sciences Humaines, Sciences économiques ou Diplômes équivalents.<br>
+        Les préinscriptions s’effectuent exclusivement en ligne. Après étude des dossiers, les candidats retenus pourront télécharger leur convocation et le programme des épreuves.<br><br>
+        <span style="color: red; font-weight: bold;">
+            Toute tentative de fraude sera considérée comme un délit et entraînera des poursuites.
+        </span>
+    </p>
+
+    <!-- Nouvelle section : Moyens de dispensation des cours -->
+    <section class="moyens-cours py-5 px-4 mb-5 bg-light rounded-4 shadow-sm animate__animated animate__fadeIn">
+        <h2 class="text-center fw-bold text-primary mb-4">📚 Moyens de dispensation des cours</h2>
+        <p class="text-muted lead text-center mb-4">
+            Afin de garantir une formation complète et accessible à tous, nos cours sont dispensés selon plusieurs modalités adaptées aux besoins des apprenants.
+        </p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-building text-primary display-4 mb-3"></i>
+                        <h5 class="fw-bold">Cours en présentiel</h5>
+                        <p class="text-muted">
+                            Des séances en salle avec encadrement direct par nos formateurs qualifiés, pour favoriser l’échange et la pratique.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-laptop text-success display-4 mb-3"></i>
+                        <h5 class="fw-bold">Cours en ligne</h5>
+                        <p class="text-muted">
+                            Un accès à notre plateforme e-learning avec vidéos, documents, quiz interactifs et forums de discussion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people text-warning display-4 mb-3"></i>
+                        <h5 class="fw-bold">Ateliers pratiques</h5>
+                        <p class="text-muted">
+                            Des sessions pratiques et travaux dirigés pour développer des compétences concrètes et opérationnelles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Liste des formations -->
+    <div class="row g-4">
+        {% for formation in formations %}
+        <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+            <div class="card border-0 shadow-sm rounded-4 formation-card p-3 h-100 animate__animated animate__zoomIn">
+                <div class="card-body d-flex flex-column">
+                    <!-- Icône formation -->
+                    <div class="icon-circle mb-3">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+
+                    <!-- Titre et infos -->
+                    <h5 class="card-title text-primary fw-bold">{{ formation.nom }}</h5>
+                    <p class="card-text mb-1">
+                        <i class="bi bi-clock me-2 text-secondary"></i><strong>Durée :</strong> {{ formation.duree }} mois
+                    </p>
+                    <p class="card-text mb-3">
+                        <i class="bi bi-cash-stack me-2 text-success"></i><strong>Coût :</strong> {{ formation.cout }} FCFA
+                    </p>
+
+                    <!-- Accordion -->
+                    <div class="accordion" id="accordionFormation{{ forloop.counter }}">
+                        <div class="accordion-item border-0">
+                            <h6 class="accordion-header" id="heading{{ forloop.counter }}">
+                                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false">
+                                    <i class="bi bi-journal-text me-2"></i>Unités d’Enseignement (UE)
+                                </button>
+                            </h6>
+                            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#accordionFormation{{ forloop.counter }}">
+                                <div class="accordion-body p-0">
+                                    <ul class="list-group list-group-flush">
+                                        {% for ue in formation.ues.all %}
+                                        <li class="list-group-item border-0 px-3 py-2 bg-light rounded-3 mb-2">
+                                            <strong>{{ ue.nom }} ({{ ue.code }})</strong>
+                                            <ul class="list-unstyled ms-3 mt-2">
+                                                {% for ecue in ue.ecues.all %}
+                                                <li class="d-flex align-items-center mb-1">
+                                                    <i class="bi bi-diagram-3-fill text-info me-2"></i>
+                                                    <span class="text-muted">{{ ecue.nom }} ({{ ecue.code }})</span>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                        {% empty %}
+                                        <li class="list-group-item bg-light text-muted fst-italic">
+                                            Aucune unité d’enseignement disponible.
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bouton inscription -->
+                    <div class="mt-auto text-center">
+                        <a href="{% url 'inscription_formation' formation_type=formation.nom|slugify %}" class="btn btn-inscription mt-4 px-4 fw-semibold">
+                            S'inscrire au concours
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Styles -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+    body {
+        font-family: 'Rubik', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    /* Header */
+    .formations-header {
+        background: linear-gradient(rgba(13,110,253,0.85), rgba(63,55,201,0.85)), 
+                    url("{% static 'assets/img/banner_formations.jpg' %}") center/cover no-repeat;
+    }
+
+    /* Carte formation */
+    .formation-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: #fff;
+        border-top: 5px solid #0d6efd;
+    }
+    .formation-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Icône ronde */
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-color, #0d6efd);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        margin: 0 auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* Bouton inscription */
+    .btn-inscription {
+        background: linear-gradient(45deg, #0d6efd, #3f37c9);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+    .btn-inscription:hover {
+        background: linear-gradient(45deg, #3f37c9, #0d6efd);
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+
+    /* Section moyens des cours */
+    .moyens-cours .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .moyens-cours .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

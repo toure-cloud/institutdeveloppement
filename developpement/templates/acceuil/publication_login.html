@@ -1,0 +1,6 @@
+<h2>Connexion à la Publication Scientifique</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Se connecter</button>
+</form>

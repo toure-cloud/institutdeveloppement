@@ -1,0 +1,152 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row g-5 align-items-stretch">
+        <!-- Carte membre -->
+        <div class="col-lg-5 mb-4">
+            <div class="profile-card shadow-lg rounded-4 overflow-hidden">
+                <div class="profile-image-container">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" 
+                         alt="{{ member.nom }}" 
+                         class="img-fluid profile-image"
+                         loading="lazy">
+                    {% endif %}
+                    <div class="profile-overlay"></div>
+                </div>
+                <div class="profile-meta text-center p-4 bg-light">
+                    <h1 class="display-6 fw-bold mb-3">{{ member.nom }}</h1>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="btn btn-primary btn-icon rounded-circle">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="mailto:{{ member.email }}" class="btn btn-primary btn-icon rounded-circle">
+                            <i class="bi bi-envelope-fill"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails membre -->
+        <div class="col-lg-7">
+            <div class="member-details-card h-100 p-4 p-lg-5 shadow-lg rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="section-title mb-0">Profil Professionnel</h2>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+
+                <div class="member-content">
+                    <div class="mb-5">
+                        <h3 class="h4 fw-bold text-primary mb-3">Biographie</h3>
+                        <p class="lead text-muted">{{ member.description }}</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="info-box bg-light p-4 rounded-3">
+                                <h4 class="h6 fw-bold mb-3">Expertises</h4>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-check2-circle text-primary me-2"></i>
+                                        Développement territorial
+                                    </li>
+                                    <!-- Ajouter d'autres éléments dynamiques si disponibles -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-box bg-light p-4 rounded-3">
+                                <h4 class="h6 fw-bold mb-3">Informations</h4>
+                                <dl class="row mb-0">
+                                    <dt class="col-4">Diplôme</dt>
+                                    <dd class="col-8">Master en Développement Local</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-card {
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-image-container {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+    }
+
+    .profile-image {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .profile-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%);
+    }
+
+    .profile-meta {
+        position: relative;
+        z-index: 2;
+        margin-top: -60px;
+    }
+
+    .btn-icon {
+        width: 45px;
+        height: 45px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .member-details-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #007bff 0%, #00ff88 100%);
+    }
+
+    @media (max-width: 992px) {
+        .profile-image-container {
+            height: 300px;
+        }
+        
+        .member-details-card {
+            padding: 2rem !important;
+        }
+    }
+</style>
+{% endblock %}

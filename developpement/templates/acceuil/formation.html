@@ -1,0 +1,64 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+{% block title %}
+    Formations - Mon Application
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center">Nos Formations</h1>
+        <p class="lead text-center">Découvrez nos programmes de formation adaptés à vos besoins.</p>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="{% static 'assets/img/formation_tourisme.jpg' %}" class="card-img-top" alt="Formation en Tourisme">
+                    <div class="card-body">
+                        <h5 class="card-title">Formation en Tourisme</h5>
+                        <p class="card-text">Apprenez les meilleures pratiques du secteur du tourisme et développez vos compétences.</p>
+                        <a href="{% url 'formation_tourisme' %}" class="btn btn-primary">En savoir plus</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="{% static 'assets/img/formation_hotellerie.jpg' %}" class="card-img-top" alt="Formation en Hôtellerie">
+                    <div class="card-body">
+                        <h5 class="card-title">Formation en Hôtellerie</h5>
+                        <p class="card-text">Obtenez une formation complète sur la gestion hôtelière et le service à la clientèle.</p>
+                        <a href="{% url 'formation_hotellerie' %}" class="btn btn-primary">En savoir plus</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="{% static 'assets/img/formation_autre.jpg' %}" class="card-img-top" alt="Autres Formations">
+                    <div class="card-body">
+                        <h5 class="card-title">Autres Formations</h5>
+                        <p class="card-text">Explorez nos autres formations pour améliorer vos compétences dans divers domaines.</p>
+                        <a href="{% url 'autres_formations' %}" class="btn btn-primary">En savoir plus</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <style>
+    .card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+  </style>  
+{% endblock %}

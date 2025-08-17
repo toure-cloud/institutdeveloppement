@@ -1,0 +1,23 @@
+# Fichiers Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Environnement virtuel
+venv/
+env/
+.env
+
+# Base de données SQLite (si utilisée)
+*.sqlite3
+
+# Fichiers de configuration locaux
+*.local
+
+# Fichiers statiques collectés
+staticfiles/
+
+# Fichiers de logs ou autres
+*.log
+*.pot
