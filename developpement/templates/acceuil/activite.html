@@ -1,0 +1,696 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block title %}Activités - Institut du Développement Durable{% endblock %}
+
+{% block content %}
+<section class="activities-hero py-5 position-relative overflow-hidden">
+    <div class="container position-relative z-2">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-4 text-white animate__animated animate__fadeInDown">
+                    🎒 Activités de la Sortie Académique
+                </h1>
+                <p class="lead text-white-80 mb-4 animate__animated animate__fadeInUp">
+                    Découvrez nos activités passionnantes et enrichissantes organisées par l'Institut du Développement Durable
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="hero-shape-1"></div>
+    <div class="hero-shape-2"></div>
+</section>
+
+<section class="py-5 bg-soft-light">
+    <div class="container">
+        <!-- Filtres et recherche -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-soft rounded-4 p-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-4">
+                            <div class="search-box position-relative">
+                                <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                                <input type="text" id="searchInput" class="form-control form-control-lg ps-5" placeholder="Rechercher une activité...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="categoryFilter" class="form-select form-select-lg">
+                                <option value="">Toutes les catégories</option>
+                                <option value="nature">Nature et Environnement</option>
+                                <option value="culture">Culture et Patrimoine</option>
+                                <option value="aventure">Aventure et Exploration</option>
+                                <option value="education">Éducation et Recherche</option>
+                                <option value="loisir">Loisirs et Détente</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-lg flex-grow-1" id="sortDate">
+                                    <i class="fas fa-sort me-2"></i> Trier par date
+                                </button>
+                                <button class="btn btn-primary btn-lg px-3" id="resetFilters">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grille d'activités -->
+        <div class="row g-4" id="activitiesGrid">
+            {% for activity in activities %}
+            <div class="col-xl-4 col-lg-6" data-category="{{ activity.category }}" data-date="{{ activity.date|date:'Y-m-d' }}">
+                <div class="activity-card card border-0 shadow-soft rounded-4 h-100 overflow-hidden transition-all">
+                    <!-- Zone d'images adaptive -->
+                    <div class="activity-images position-relative">
+                        {% with images=activity.images.all %}
+                            {% if images %}
+                                {% if images|length == 1 %}
+                                    <!-- Une seule image - pleine largeur -->
+                                    <div class="single-image">
+                                        <img src="{{ images.0.image.url }}" 
+                                             class="img-fluid w-100" 
+                                             alt="{{ activity.title }}"
+                                             loading="lazy"
+                                             style="height: 250px; object-fit: cover;">
+                                    </div>
+                                {% elif images|length == 2 %}
+                                    <!-- Deux images - côte à côte -->
+                                    <div class="double-images d-flex">
+                                        {% for image in images|slice:":2" %}
+                                        <div class="flex-fill" style="flex: 1;">
+                                            <img src="{{ image.image.url }}" 
+                                                 class="img-fluid w-100 h-100" 
+                                                 alt="{{ activity.title }}"
+                                                 loading="lazy"
+                                                 style="height: 250px; object-fit: cover;">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% elif images|length == 3 %}
+                                    <!-- Trois images - une grande + deux petites -->
+                                    <div class="triple-images d-flex flex-wrap">
+                                        <div class="w-100" style="height: 150px;">
+                                            <img src="{{ images.0.image.url }}" 
+                                                 class="img-fluid w-100 h-100" 
+                                                 alt="{{ activity.title }}"
+                                                 loading="lazy"
+                                                 style="object-fit: cover;">
+                                        </div>
+                                        <div class="w-50" style="height: 100px;">
+                                            <img src="{{ images.1.image.url }}" 
+                                                 class="img-fluid w-100 h-100" 
+                                                 alt="{{ activity.title }}"
+                                                 loading="lazy"
+                                                 style="object-fit: cover;">
+                                        </div>
+                                        <div class="w-50" style="height: 100px;">
+                                            <img src="{{ images.2.image.url }}" 
+                                                 class="img-fluid w-100 h-100" 
+                                                 alt="{{ activity.title }}"
+                                                 loading="lazy"
+                                                 style="object-fit: cover;">
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <!-- Quatre images ou plus - grille 2x2 -->
+                                    <div class="multiple-images d-flex flex-wrap">
+                                        {% for image in images|slice:":4" %}
+                                        <div class="w-50" style="height: 125px;">
+                                            <img src="{{ image.image.url }}" 
+                                                 class="img-fluid w-100 h-100" 
+                                                 alt="{{ activity.title }}"
+                                                 loading="lazy"
+                                                 style="object-fit: cover;">
+                                            {% if forloop.last and images|length > 4 %}
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge bg-dark px-2 py-1">
+                                                    +{{ images|length|add:"-4" }}
+                                                </span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <!-- Image par défaut -->
+                                <div class="single-image">
+                                    <img src="{% static 'assets/img/default_activity.jpg' %}"
+                                         class="img-fluid w-100"
+                                         alt="Image par défaut"
+                                         loading="lazy"
+                                         style="height: 250px; object-fit: cover;">
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <!-- Badge catégorie -->
+                        <div class="position-absolute top-0 start-0 m-3 z-3">
+                            <span class="badge bg-{{ activity.category }} px-3 py-2 rounded-pill text-white fw-semibold">
+                                {{ activity.get_category_display }}
+                            </span>
+                        </div>
+                        
+                        <!-- Overlay d'action -->
+                        <div class="image-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center opacity-0 transition-all">
+                            <a href="{% url 'activite_detail' activity.id %}" class="btn btn-primary btn-sm rounded-pill px-3">
+                                <i class="fas fa-eye me-1"></i> Voir plus
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Contenu de la carte -->
+                    <div class="card-body d-flex flex-column p-4">
+                        <!-- En-tête -->
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="activity-icon me-3 flex-shrink-0">
+                                <i class="fas fa-{{ activity.get_icon }} fa-lg"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title fw-bold text-dark mb-1 line-clamp-2">{{ activity.title }}</h5>
+                                {% if activity.location %}
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i> {{ activity.location }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="card-text text-muted flex-grow-1 mb-3 line-clamp-3">{{ activity.short_description }}</p>
+
+                        <!-- Métadonnées -->
+                        <div class="activity-meta mb-3">
+                            {% if activity.date %}
+                            <div class="d-flex align-items-center text-primary mb-2">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                <span class="small fw-semibold">{{ activity.date|date:"d M Y" }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="fas fa-clock me-2"></i>
+                                <span>Ajouté le {{ activity.created_at|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="{% url 'activite_detail' activity.id %}" 
+                               class="btn btn-primary btn-hover-gradient flex-grow-1 py-2">
+                                <i class="fas fa-eye me-2"></i> Découvrir
+                            </a>
+                            <button class="btn btn-outline-primary btn-icon rounded-3 share-btn" 
+                                    data-bs-toggle="tooltip" 
+                                    title="Partager"
+                                    data-activity="{{ activity.title }}"
+                                    data-url="{% url 'activite_detail' activity.id %}">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-calendar-plus fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted mb-2">Aucune activité planifiée</h4>
+                    <p class="text-muted">Revenez bientôt pour découvrir nos prochaines activités !</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if activities.has_other_pages %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <nav aria-label="Pagination des activités">
+                    <ul class="pagination justify-content-center">
+                        {% if activities.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ activities.previous_page_number }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for i in activities.paginator.page_range %}
+                        <li class="page-item {% if activities.number == i %}active{% endif %}">
+                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if activities.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ activities.next_page_number }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Modal de partage -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-soft rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Partager cette activité</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3" id="shareActivityTitle">Partagez cette activité avec vos amis</p>
+                <div class="d-flex gap-2 justify-content-center mb-4">
+                    <a href="#" class="btn btn-social btn-facebook rounded-3" id="shareFacebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="btn btn-social btn-twitter rounded-3" id="shareTwitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="btn btn-social btn-linkedin rounded-3" id="shareLinkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="btn btn-social btn-whatsapp rounded-3" id="shareWhatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="shareUrl" readonly>
+                    <button class="btn btn-primary" id="copyUrl">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --success-color: #4cc9f0;
+        --warning-color: #f72585;
+        --info-color: #7209b7;
+        --light-bg: #f8f9fa;
+        --dark-bg: #1a1e29;
+        --card-bg: #ffffff;
+        --text-color: #2b2d42;
+        --text-muted: #6c757d;
+        --border-radius: 16px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --box-shadow-soft: 0 5px 20px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s ease;
+    }
+
+    /* Hero section */
+    .activities-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .activities-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.3;
+        z-index: 1;
+    }
+
+    .hero-shape-1, .hero-shape-2 {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+
+    .hero-shape-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        right: -100px;
+    }
+
+    .hero-shape-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -100px;
+        left: -50px;
+    }
+
+    .text-white-80 {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* Cartes d'activités */
+    .activity-card {
+        transition: var(--transition);
+        background: var(--card-bg);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .activity-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow);
+        border-color: var(--primary-color);
+    }
+
+    .activity-card:hover .image-overlay {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+
+    /* Zone d'images adaptive */
+    .activity-images {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .single-image img,
+    .double-images img,
+    .triple-images img,
+    .multiple-images img {
+        transition: transform 0.3s ease;
+    }
+
+    .activity-card:hover .single-image img,
+    .activity-card:hover .double-images img,
+    .activity-card:hover .triple-images img,
+    .activity-card:hover .multiple-images img {
+        transform: scale(1.05);
+    }
+
+    .double-images {
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        overflow: hidden;
+    }
+
+    .double-images > div:first-child {
+        border-right: 2px solid white;
+    }
+
+    .triple-images > div:first-child {
+        border-bottom: 2px solid white;
+    }
+
+    .triple-images > div:nth-child(2) {
+        border-right: 2px solid white;
+    }
+
+    .multiple-images > div:nth-child(odd) {
+        border-right: 2px solid white;
+    }
+
+    .multiple-images > div:nth-child(-n+2) {
+        border-bottom: 2px solid white;
+    }
+
+    .image-overlay {
+        background: rgba(0, 0, 0, 0);
+        transition: var(--transition);
+        z-index: 2;
+    }
+
+    /* Badges de catégorie */
+    .badge.bg-nature { background: linear-gradient(45deg, #10b981, #059669) !important; }
+    .badge.bg-culture { background: linear-gradient(45deg, #8b5cf6, #7c3aed) !important; }
+    .badge.bg-aventure { background: linear-gradient(45deg, #f59e0b, #d97706) !important; }
+    .badge.bg-education { background: linear-gradient(45deg, #3b82f6, #2563eb) !important; }
+    .badge.bg-loisir { background: linear-gradient(45deg, #ec4899, #db2777) !important; }
+
+    /* Icônes d'activité */
+    .activity-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        box-shadow: var(--box-shadow-soft);
+    }
+
+    /* Limite de lignes */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Boutons */
+    .btn-hover-gradient {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-hover-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(67, 97, 238, 0.3);
+    }
+
+    /* Boutons sociaux */
+    .btn-social {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: var(--transition);
+    }
+
+    .btn-facebook { background: #3b5998; color: white; }
+    .btn-twitter { background: #1da1f2; color: white; }
+    .btn-linkedin { background: #0077b5; color: white; }
+    .btn-whatsapp { background: #25d366; color: white; }
+
+    .btn-social:hover {
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    /* Search box */
+    .search-box .fa-search {
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .search-box input {
+        padding-left: 50px;
+        border-radius: 12px;
+        border: 2px solid transparent;
+        transition: var(--transition);
+    }
+
+    .search-box input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        border-radius: 10px;
+        margin: 0 5px;
+        border: none;
+        color: var(--text-color);
+        transition: var(--transition);
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .pagination .page-link:hover {
+        background: var(--light-bg);
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 3rem 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .activities-hero {
+            padding: 3rem 0;
+        }
+        
+        .display-5 {
+            font-size: 2rem;
+        }
+        
+        .search-box, .form-select {
+            margin-bottom: 1rem;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .double-images,
+        .triple-images,
+        .multiple-images {
+            flex-direction: column;
+        }
+        
+        .double-images > div,
+        .triple-images > div,
+        .multiple-images > div {
+            width: 100% !important;
+            height: 120px !important;
+            border: none !important;
+        }
+        
+        .triple-images > div:first-child {
+            border-bottom: 2px solid white !important;
+        }
+    }
+
+    .z-2 { z-index: 2; }
+    .z-3 { z-index: 3; }
+    .py-5 { padding-top: 3rem; padding-bottom: 3rem; }
+    .mt-5 { margin-top: 3rem; }
+    .shadow-soft { box-shadow: var(--box-shadow-soft); }
+    .bg-soft-light { background-color: #f8fafc; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filtrage des activités
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortDateBtn = document.getElementById('sortDate');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const activitiesGrid = document.getElementById('activitiesGrid');
+        const activityCards = activitiesGrid.querySelectorAll('.col-xl-4');
+
+        let currentSort = 'desc';
+
+        // Fonction de filtrage
+        function filterActivities() {
+            const searchText = searchInput.value.toLowerCase();
+            const categoryValue = categoryFilter.value;
+
+            activityCards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-text').textContent.toLowerCase();
+                const category = card.getAttribute('data-category');
+                
+                const matchesSearch = title.includes(searchText) || description.includes(searchText);
+                const matchesCategory = categoryValue === '' || category === categoryValue;
+                
+                card.style.display = (matchesSearch && matchesCategory) ? 'block' : 'none';
+            });
+        }
+
+        // Tri par date
+        function sortActivities() {
+            const cards = Array.from(activityCards).filter(card => card.style.display !== 'none');
+            
+            cards.sort((a, b) => {
+                const dateA = new Date(a.getAttribute('data-date') || '9999-12-31');
+                const dateB = new Date(b.getAttribute('data-date') || '9999-12-31');
+                return currentSort === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+
+            cards.forEach(card => activitiesGrid.appendChild(card));
+            currentSort = currentSort === 'asc' ? 'desc' : 'asc';
+        }
+
+        // Réinitialiser les filtres
+        function resetFilters() {
+            searchInput.value = '';
+            categoryFilter.value = '';
+            activityCards.forEach(card => card.style.display = 'block');
+            currentSort = 'desc';
+        }
+
+        // Événements
+        searchInput.addEventListener('input', filterActivities);
+        categoryFilter.addEventListener('change', filterActivities);
+        sortDateBtn.addEventListener('click', sortActivities);
+        resetFiltersBtn.addEventListener('click', resetFilters);
+
+        // Partage d'activités
+        const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+        const shareButtons = document.querySelectorAll('.share-btn');
+        
+        shareButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const activityTitle = this.getAttribute('data-activity');
+                const activityUrl = window.location.origin + this.getAttribute('data-url');
+                
+                document.getElementById('shareActivityTitle').textContent = `Partager "${activityTitle}"`;
+                document.getElementById('shareUrl').value = activityUrl;
+                
+                const encodedUrl = encodeURIComponent(activityUrl);
+                const encodedTitle = encodeURIComponent(activityTitle);
+                
+                document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+                document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+                document.getElementById('shareLinkedin').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+                document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
+                
+                shareModal.show();
+            });
+        });
+
+        // Copier l'URL
+        document.getElementById('copyUrl').addEventListener('click', function() {
+            const shareUrl = document.getElementById('shareUrl');
+            shareUrl.select();
+            document.execCommand('copy');
+            
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                this.innerHTML = originalText;
+            }, 2000);
+        });
+
+        // Initialiser les tooltips Bootstrap
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

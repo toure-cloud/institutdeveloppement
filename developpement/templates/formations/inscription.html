@@ -1,0 +1,740 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Inscription - {{ formation_type|no_dash|title }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Design moderne et amélioré */
+    :root {
+        --primary-color: #4361ee;
+        --primary-dark: #3a0ca3;
+        --primary-light: #4895ef;
+        --secondary-color: #7209b7;
+        --success-color: #4cc9f0;
+        --light-bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-color: #2b2d42;
+        --text-muted: #6c757d;
+        --highlight: #4895ef;
+        --error-color: #ef233c;
+        --border-color: #e9ecef;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --box-shadow-soft: 0 5px 20px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s ease;
+    }
+
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, var(--light-bg) 0%, #f0f2f5 100%);
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .form-container {
+        max-width: 950px;
+        margin: 50px auto;
+        padding: 50px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        position: relative;
+    }
+
+    h1::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+        margin: 15px auto 0;
+        border-radius: 2px;
+    }
+
+    .intro-text {
+        text-align: center;
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 40px;
+        line-height: 1.7;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+        font-size: 1rem;
+        background-color: #fff;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        outline: none;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 10px;
+        display: block;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border: none;
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        transition: var(--transition);
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: var(--box-shadow-soft);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        background: transparent;
+        padding: 12px 24px;
+        border-radius: 50px;
+        transition: var(--transition);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .form-section {
+        margin-bottom: 45px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 30px;
+    }
+
+    .form-section h5 {
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        font-weight: 700;
+        padding: 12px 16px;
+        background: rgba(67, 97, 238, 0.05);
+        border-radius: 8px;
+    }
+
+    .form-section h5 i {
+        margin-right: 12px;
+        color: var(--primary-color);
+        background: rgba(67, 97, 238, 0.1);
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Style pour l'upload de fichiers amélioré */
+    .file-upload-box {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        padding: 25px 20px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .file-upload-box:hover {
+        border-color: var(--primary-color);
+        background: #f1f8ff;
+        transform: translateY(-2px);
+    }
+
+    .file-upload-box i {
+        font-size: 2.2rem;
+        color: var(--primary-color);
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .file-upload-box span {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    /* Groupe mot de passe amélioré */
+    .password-group {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 45px;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: var(--transition);
+    }
+
+    .password-toggle:hover {
+        color: var(--primary-color);
+    }
+
+    /* Alertes améliorées */
+    .alert {
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        border-left: 4px solid var(--primary-color);
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+    }
+
+    .alert-success {
+        border-left-color: #2ecc71;
+        background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    .alert-danger {
+        border-left-color: var(--error-color);
+        background-color: rgba(239, 35, 60, 0.1);
+    }
+
+    .alert i {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Navigation entre les sections */
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    /* Indicateur de champ requis */
+    .required-field::after {
+        content: '*';
+        color: var(--error-color);
+        margin-left: 4px;
+    }
+
+    /* Aide visuelle pour la validation */
+    .is-invalid {
+        border-color: var(--error-color) !important;
+    }
+
+    .invalid-feedback {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    /* Responsive amélioré */
+    @media (max-width: 992px) {
+        .form-container {
+            padding: 40px 30px;
+            margin: 40px 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 30px 20px;
+            margin: 30px 15px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+        }
+        
+        .form-section h5 {
+            font-size: 1.2rem;
+        }
+        
+        .form-navigation {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn-primary, .btn-outline-primary {
+            width: 100%;
+        }
+    }
+
+    /* Animation pour les sections du formulaire */
+    .form-section {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="form-container">
+    <h1>INSCRIPTION {{ formation_type|no_dash|upper }}</h1>
+    <p class="intro-text">Remplissez le formulaire ci-dessous pour vous inscrire à notre programme. <span class="text-danger">* Champs obligatoires</span></p>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} me-2"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'inscription_formation' formation_type=formation_type %}" enctype="multipart/form-data" id="inscriptionForm">
+        {% csrf_token %}
+        <input type="hidden" name="formation" value="{{ formation_type }}">
+
+        <!-- Section Informations Personnelles -->
+        <div class="form-section">
+            <h5><i class="fas fa-user"></i> INFORMATIONS PERSONNELLES</h5>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label for="nom" class="form-label required-field">Nom</label>
+                    <input type="text" class="form-control" id="nom" name="nom" style="text-transform: uppercase;" required>
+                    <div class="invalid-feedback">Veuillez saisir votre nom.</div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="prenom" class="form-label required-field">Prénom</label>
+                    <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    <div class="invalid-feedback">Veuillez saisir votre prénom.</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label for="sexe" class="form-label required-field">Genre</label>
+                    <select class="form-control" id="sexe" name="sexe" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="M">Masculin</option>
+                        <option value="F">Féminin</option>
+                    </select>
+                    <div class="invalid-feedback">Veuillez sélectionner votre genre.</div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="date_naissance" class="form-label required-field">Date de Naissance</label>
+                    <input type="date" class="form-control" id="date_naissance" name="date_naissance" required>
+                    <div class="invalid-feedback">Veuillez saisir votre date de naissance.</div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="lieu_naissance" class="form-label required-field">Lieu de Naissance</label>
+                <input type="text" class="form-control" id="lieu_naissance" name="lieu_naissance" required>
+                <div class="invalid-feedback">Veuillez saisir votre lieu de naissance.</div>
+            </div>
+        </div>
+
+        <!-- Section Coordonnées -->
+        <div class="form-section">
+            <h5><i class="fas fa-address-card"></i> COORDONNÉES</h5>
+            <div class="mb-4">
+                <label for="email" class="form-label required-field">Adresse Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <div class="invalid-feedback">Veuillez saisir une adresse email valide.</div>
+            </div>
+
+            <div class="mb-4">
+                <label for="email_confirmation" class="form-label required-field">Confirmation Email</label>
+                <input type="email" class="form-control" id="email_confirmation" name="email_confirmation" required>
+                <div class="invalid-feedback">Les adresses email ne correspondent pas.</div>
+            </div>
+
+            <div class="mb-4">
+                <label for="telephone" class="form-label required-field">Numéro de Téléphone</label>
+                <input type="tel" class="form-control" id="telephone" name="telephone" pattern="[0-9]{8,10}" required>
+                <div class="invalid-feedback">Veuillez saisir un numéro de téléphone valide (8 à 10 chiffres).</div>
+            </div>
+        </div>
+
+        <!-- Section Identifiants -->
+        <div class="form-section">
+            <h5><i class="fas fa-id-card"></i> IDENTIFIANTS</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="cmu" class="form-label required-field">Numéro Carte CMU</label>
+                    <input type="text" class="form-control" id="cmu" name="cmu" required>
+                    <div class="invalid-feedback">Veuillez saisir votre numéro de carte CMU.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="cni" class="form-label required-field">Numéro CNI</label>
+                    <input type="text" class="form-control" id="cni" name="cni" style="text-transform: uppercase;" required>
+                    <div class="invalid-feedback">Veuillez saisir votre numéro de CNI.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Sécurité -->
+        <div class="form-section">
+            <h5><i class="fas fa-lock"></i> SÉCURITÉ</h5>
+            <div class="row mb-4">
+                <div class="col-md-6 password-group">
+                    <label for="password" class="form-label required-field">Mot de passe</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="8 caractères minimum, avec au moins 1 majuscule, 1 minuscule et 1 chiffre" required>
+                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                    <div class="invalid-feedback">Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.</div>
+                </div>
+                <div class="col-md-6 password-group">
+                    <label for="confirm_password" class="form-label required-field">Confirmer le mot de passe</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    <i class="fas fa-eye password-toggle" id="toggleConfirmPassword"></i>
+                    <div class="invalid-feedback">Les mots de passe ne correspondent pas.</div>
+                </div>
+                <small class="form-text text-muted mt-2">Minimum 8 caractères avec majuscule, minuscule et chiffre</small>
+            </div>
+        </div>
+
+        <!-- Section Baccalauréat -->
+        <div class="form-section">
+            <h5><i class="fas fa-graduation-cap"></i> BACALAURÉAT</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="serie_bac" class="form-label required-field">Série du Bac</label>
+                    <select class="form-control" id="serie_bac" name="serie_bac" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="A">Série A</option>
+                        <option value="C">Série C</option>
+                        <option value="D">Série D</option>
+                        <option value="E">Série E</option>
+                        <option value="F">Série F</option>
+                        <option value="G">Série G</option>
+                    </select>
+                    <div class="invalid-feedback">Veuillez sélectionner votre série de bac.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="annee_obtentionbac" class="form-label required-field">Année d'obtention</label>
+                    <input type="number" class="form-control" id="annee_obtentionbac" name="annee_obtentionbac" 
+                           min="1950" max="{{ current_year }}" required>
+                    <div class="invalid-feedback">Veuillez saisir l'année d'obtention de votre bac.</div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="mention_bac" class="form-label required-field">Mention</label>
+                    <select class="form-control" id="mention_bac" name="mention_bac" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="TB">Très Bien</option>
+                        <option value="B">Bien</option>
+                        <option value="AB">Assez Bien</option>
+                        <option value="P">Passable</option>
+                    </select>
+                    <div class="invalid-feedback">Veuillez sélectionner votre mention au bac.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="numero_bac" class="form-label required-field">Numéro du Bac</label>
+                    <input type="text" class="form-control" id="numero_bac" name="numero_bac" style="text-transform: uppercase;" required>
+                    <div class="invalid-feedback">Veuillez saisir votre numéro de bac.</div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="ecole_diplomebac" class="form-label required-field">École d'obtention du Bac</label>
+                <input type="text" class="form-control" id="ecole_diplomebac" name="ecole_diplomebac" required>
+                <div class="invalid-feedback">Veuillez saisir le nom de votre école.</div>
+            </div>
+        </div>
+
+        <!-- Section Licence -->
+        <div class="form-section">
+            <h5><i class="fas fa-user-graduate"></i> LICENCE</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="licence" class="form-label required-field">Type de Licence</label>
+                    <input type="text" class="form-control" id="licence" name="licence" required>
+                    <div class="invalid-feedback">Veuillez saisir votre type de licence.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="annee_obtentionlicence" class="form-label required-field">Année d'obtention</label>
+                    <input type="number" class="form-control" id="annee_obtentionlicence" name="annee_obtentionlicence" 
+                           min="1950" max="{{ current_year }}" required>
+                    <div class="invalid-feedback">Veuillez saisir l'année d'obtention de votre licence.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Documents -->
+        <div class="form-section">
+            <h5><i class="fas fa-file-upload"></i> DOCUMENTS À FOURNIR</h5>
+            <div class="mb-4">
+                <label for="photo" class="form-label required-field">Photo d'identité</label>
+                <div class="file-upload-box" id="photo-upload-box">
+                    <input type="file" class="form-control visually-hidden" id="photo" name="photo_identite" accept="image/*" required>
+                    <i class="fas fa-camera"></i>
+                    <span>Cliquez pour télécharger votre photo</span>
+                    <small class="text-muted">Formats acceptés: JPG, PNG (Max 2MB)</small>
+                </div>
+                <div class="invalid-feedback">Veuillez télécharger votre photo d'identité.</div>
+            </div>
+
+            <div class="mb-4">
+                <label for="bac" class="form-label required-field">Diplôme du Bac</label>
+                <div class="file-upload-box" id="bac-upload-box">
+                    <input type="file" class="form-control visually-hidden" id="bac" name="bac_scan" accept=".pdf,.jpg,.png" required>
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Cliquez pour télécharger votre diplôme</span>
+                    <small class="text-muted">Formats acceptés: PDF, JPG, PNG (Max 5MB)</small>
+                </div>
+                <div class="invalid-feedback">Veuillez télécharger votre diplôme de bac.</div>
+            </div>
+
+            <div class="mb-4">
+                <label for="diplome" class="form-label required-field">Diplôme de Licence</label>
+                <div class="file-upload-box" id="diplome-upload-box">
+                    <input type="file" class="form-control visually-hidden" id="diplome" name="diplome_scan" accept=".pdf,.jpg,.png" required>
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Cliquez pour télécharger votre diplôme</span>
+                    <small class="text-muted">Formats acceptés: PDF, JPG, PNG (Max 5MB)</small>
+                </div>
+                <div class="invalid-feedback">Veuillez télécharger votre diplôme de licence.</div>
+            </div>
+
+            <div class="mb-4">
+                <label for="extrait_naissance" class="form-label required-field">Extrait de naissance</label>
+                <div class="file-upload-box" id="extrait-upload-box">
+                    <input type="file" class="form-control visually-hidden" id="extrait_naissance" name="extrait_naissance" accept=".pdf,.jpg,.png" required>
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Cliquez pour télécharger votre extrait</span>
+                    <small class="text-muted">Formats acceptés: PDF, JPG, PNG (Max 5MB)</small>
+                </div>
+                <div class="invalid-feedback">Veuillez télécharger votre extrait de naissance.</div>
+            </div>
+        </div>
+
+        <!-- Bouton de soumission -->
+        <div class="d-grid mt-5">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-paper-plane me-2"></i> Finaliser mon inscription
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fonctionnalité pour afficher/masquer les mots de passe
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        if (toggleConfirmPassword && confirmPasswordInput) {
+            toggleConfirmPassword.addEventListener('click', function() {
+                const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Gestion des zones de dépôt de fichiers
+        const fileUploadBoxes = document.querySelectorAll('.file-upload-box');
+        
+        fileUploadBoxes.forEach(box => {
+            const input = box.querySelector('input[type="file"]');
+            
+            box.addEventListener('click', function() {
+                input.click();
+            });
+            
+            input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    box.querySelector('span').textContent = this.files[0].name;
+                    box.style.borderColor = '#4361ee';
+                    box.style.backgroundColor = '#f1f8ff';
+                }
+            });
+            
+            box.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#4361ee';
+                this.style.backgroundColor = '#f1f8ff';
+            });
+            
+            box.addEventListener('dragleave', function() {
+                this.style.borderColor = '#dee2e6';
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            
+            box.addEventListener('drop', function(e) {
+                e.preventDefault();
+                if (e.dataTransfer.files.length > 0) {
+                    input.files = e.dataTransfer.files;
+                    box.querySelector('span').textContent = e.dataTransfer.files[0].name;
+                    this.style.borderColor = '#4361ee';
+                    this.style.backgroundColor = '#f1f8ff';
+                }
+            });
+        });
+        
+        // Validation des emails
+        const emailInput = document.getElementById('email');
+        const emailConfirmationInput = document.getElementById('email_confirmation');
+        
+        function validateEmails() {
+            if (emailInput.value && emailConfirmationInput.value && emailInput.value !== emailConfirmationInput.value) {
+                emailInput.classList.add('is-invalid');
+                emailConfirmationInput.classList.add('is-invalid');
+                return false;
+            } else {
+                emailInput.classList.remove('is-invalid');
+                emailConfirmationInput.classList.remove('is-invalid');
+                return true;
+            }
+        }
+        
+        emailInput.addEventListener('blur', validateEmails);
+        emailConfirmationInput.addEventListener('blur', validateEmails);
+        
+        // Validation des mots de passe
+        const passwordInputField = document.getElementById('password');
+        const confirmPasswordInputField = document.getElementById('confirm_password');
+        
+        function validatePasswords() {
+            if (passwordInputField.value && confirmPasswordInputField.value && passwordInputField.value !== confirmPasswordInputField.value) {
+                passwordInputField.classList.add('is-invalid');
+                confirmPasswordInputField.classList.add('is-invalid');
+                return false;
+            } else {
+                passwordInputField.classList.remove('is-invalid');
+                confirmPasswordInputField.classList.remove('is-invalid');
+                return true;
+            }
+        }
+        
+        passwordInputField.addEventListener('blur', validatePasswords);
+        confirmPasswordInputField.addEventListener('blur', validatePasswords);
+        
+        // Validation du formulaire avant soumission
+        const form = document.getElementById('inscriptionForm');
+        
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Valider les emails
+            if (!validateEmails()) {
+                isValid = false;
+            }
+            
+            // Valider les mots de passe
+            if (!validatePasswords()) {
+                isValid = false;
+            }
+            
+            // Valider les champs requis
+            const requiredInputs = form.querySelectorAll('input[required], select[required]');
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                // Faire défiler jusqu'au premier champ invalide
+                const firstInvalid = form.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+        
+        // Mise en majuscule automatique
+        function toUpperCaseInput(event) {
+            event.target.value = event.target.value.toUpperCase();
+        }
+
+        document.getElementById("nom").addEventListener("input", toUpperCaseInput);
+        document.getElementById("cni").addEventListener("input", toUpperCaseInput);
+        document.getElementById("numero_bac").addEventListener("input", toUpperCaseInput);
+    });
+</script>
+
+{% endblock %}

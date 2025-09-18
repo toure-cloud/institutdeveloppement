@@ -1,0 +1,301 @@
+{% extends "administrateur/base.html" %}
+{% load static %}
+
+{% block title %}Tableau de Bord - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>Tableau de Bord
+                </h1>
+                <div class="btn-group">
+                    <a href="{% url 'liste_inscrits' %}" class="btn btn-primary">
+                        <i class="fas fa-users me-1"></i> Voir tous les inscrits
+                    </a>
+                </div>
+            </div>
+            <p class="text-muted">Vue d'ensemble des inscriptions et statistiques</p>
+        </div>
+    </div>
+
+    <!-- Cartes de statistiques -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Inscriptions
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_inscriptions }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Inscriptions Validées
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inscriptions_valides }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                En Attente
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inscriptions_attente }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Rejetées
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inscriptions_rejetees }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques et tableaux -->
+    <div class="row">
+        <!-- Répartition par formation -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Répartition par Formation</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="formationChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        {% for stat in formations_stats %}
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: {% cycle '#4e73df' '#1cc88a' '#36b9cc' '#f6c23e' '#e74a3b' '#858796' as colors %}"></i> 
+                            {{ stat.nom }} ({{ stat.count }})
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dernières inscriptions -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Dernières Inscriptions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Formation</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inscrit in dernieres_inscriptions %}
+                                <tr>
+                                    <td>{{ inscrit.prenom }} {{ inscrit.nom }}</td>
+                                    <td>{{ inscrit.formation.nom|default:"Non spécifiée" }}</td>
+                                    <td>{{ inscrit.date_inscription|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if inscrit.statut == 'valide' %}bg-success
+                                            {% elif inscrit.statut == 'en_attente' %}bg-warning
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ inscrit.get_statut_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Aucune inscription</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Actions Rapides</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'liste_inscrits' %}" class="btn btn-primary btn-block">
+                                <i class="fas fa-users me-1"></i> Gérer les inscrits
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'liste_activites' %}" class="btn btn-success btn-block">
+                                <i class="fas fa-hiking me-1"></i> Gestion des activités
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'envoyer_mail' %}" class="btn btn-info btn-block">
+                                <i class="fas fa-envelope me-1"></i> Envoyer un email
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'test_email' %}" class="btn btn-warning btn-block">
+                                <i class="fas fa-paper-plane me-1"></i> Tester les emails
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3 mb-3">
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart.js pour la répartition par formation
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('formationChart').getContext('2d');
+        
+        // Préparer les données pour le graphique
+        const labels = [];
+        const data = [];
+        const backgroundColors = [
+            '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', 
+            '#e74a3b', '#858796', '#f8f9fa', '#5a5c69'
+        ];
+        
+        {% for stat in formations_stats %}
+        labels.push('{{ stat.nom }}');
+        data.push({{ stat.count }});
+        {% endfor %}
+        
+        const formationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    hoverBackgroundColor: backgroundColors,
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyColor: "#858796",
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        padding: 15,
+                        displayColors: false,
+                    }
+                },
+                cutout: '60%',
+            },
+        });
+    });
+</script>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-bottom: 1px solid #e3e6f0;
+        background-color: #f8f9fc;
+    }
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+    .border-left-warning {
+        border-left: 4px solid #f6c23e !important;
+    }
+    .border-left-danger {
+        border-left: 4px solid #e74a3b !important;
+    }
+    .chart-pie {
+        position: relative;
+        height: 250px;
+    }
+    .text-xs {
+        font-size: 0.7rem;
+    }
+    .font-weight-bold {
+        font-weight: 600;
+    }
+    .text-gray-800 {
+        color: #5a5c69 !important;
+    }
+    .text-gray-300 {
+        color: #dddfeb !important;
+    }
+</style>
+{% endblock %}

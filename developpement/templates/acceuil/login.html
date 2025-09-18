@@ -1,0 +1,130 @@
+{% extends 'acceuil/base.html' %}
+
+{% block title %}Connexion | Institut de Développement des Territoires{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-light rounded-lg">
+                <!-- En-tête de la carte -->
+                <div class="card-header text-center bg-gradient-primary text-white">
+                    <h3 class="mb-0">Connexion</h3>
+                </div>
+                <!-- Corps de la carte -->
+                <div class="card-body p-4">
+                    <!-- Affichage des messages d'erreur -->
+                    {% if messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {% for message in messages %}
+                                <p class="mb-0">{{ message }}</p>
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Champ pour le nom d'utilisateur -->
+                        <div class="form-group mb-3">
+                            <label for="id_username" class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="id_username" name="username" placeholder="Entrez votre nom d'utilisateur" required>
+                        </div>
+
+                        <!-- Champ pour le mot de passe -->
+                        <div class="form-group mb-3">
+                            <label for="id_password" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="id_password" name="password" placeholder="Entrez votre mot de passe" required>
+                        </div>
+
+                        <!-- Options supplémentaires -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="remember_me">
+                                <label class="form-check-label" for="remember_me">Se souvenir de moi</label>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="text-primary small">Mot de passe oublié ?</a>
+                        </div>
+
+                        <!-- Bouton de soumission -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Pied de la carte -->
+                <div class="card-footer text-center bg-light">
+                    <p class="mb-0">Pas encore de compte ? 
+                        <a href="{% url 'register_auteur' %}" class="text-primary fw-bold">S'inscrire</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Arrière-plan avec dégradé */
+    body {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* Personnalisation de la carte */
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: #007bff;
+        background: linear-gradient(135deg, #0056b3, #007bff);
+    }
+
+    /* Boutons */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Champs du formulaire */
+    .form-control {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Liens */
+    a {
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* Alertes */
+    .alert-danger {
+        border: none;
+        font-size: 14px;
+    }
+
+    .btn-close {
+        font-size: 12px;
+    }
+
+    /* Ombre au survol */
+    .card:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}

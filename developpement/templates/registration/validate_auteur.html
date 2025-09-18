@@ -1,0 +1,46 @@
+{% extends 'acceuil/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center text-success mb-4">Inscription en attente de validation</h2>
+    <p class="text-center text-muted">Votre compte a été créé avec succès. Une équipe va vérifier vos informations, et vous recevrez une notification dès que votre compte sera validé.</p>
+
+    <!-- Carte d'identité de l'auteur -->
+    <div class="card mx-auto shadow-lg mt-5" style="max-width: 700px;">
+        <div class="row g-0">
+            <!-- Section photo à droite -->
+            <div class="col-md-4">
+                <img src="{{ auteur.photo.url }}" alt="Photo de {{ auteur.nom }}" class="img-fluid rounded-end h-100" style="object-fit: cover;">
+            </div>
+            
+            <!-- Informations de l'auteur -->
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">{{ auteur.nom }} {{ auteur.prenom }}</h4>
+                    <p class="card-text mb-2"><strong>Profession :</strong> {{ auteur.profession }}</p>
+                    <p class="card-text mb-2"><strong>Grade :</strong> {{ auteur.grade }}</p>
+                    <p class="card-text mb-2"><strong>Université :</strong> {{ auteur.universite }}</p>
+                    <p class="card-text mb-2"><strong>Président de l'université :</strong> {{ auteur.president_universite }}</p>
+                    <p class="card-text mb-2"><strong>Encadreur scientifique :</strong> {{ auteur.encadreur_scientifique }}</p>
+                    <p class="card-text"><strong>Téléphone :</strong> {{ auteur.telephone }}</p>
+                    <p class="card-text"><strong>Email :</strong> {{ auteur.user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles pour personnaliser la carte -->
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

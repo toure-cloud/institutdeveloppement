@@ -1,0 +1,557 @@
+{% extends "administrateur/base.html" %}
+{% load static %}
+
+{% block title %}Connexion Administrateur - Institut du Développement Durable{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #224abe;
+        --success-color: #1cc88a;
+        --warning-color: #f6c23e;
+        --danger-color: #e74a3b;
+        --light-bg: #f8f9fc;
+        --dark-bg: #5a5c69;
+        --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        --gradient-success: linear-gradient(135deg, var(--success-color) 0%, #13855c 100%);
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 450px;
+        overflow: hidden;
+        position: relative;
+        z-index: 2;
+        transition: var(--transition);
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(45deg);
+        animation: shine 3s infinite linear;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .login-logo {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .login-logo i {
+        font-size: 2.5rem;
+    }
+
+    .login-body {
+        padding: 40px 30px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e3e6f0;
+        padding: 15px;
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--light-bg);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .input-group {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .password-toggle {
+        background: white;
+        border: 2px solid #e3e6f0;
+        border-left: none;
+        color: var(--dark-bg);
+        transition: var(--transition);
+    }
+
+    .password-toggle:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .btn-login {
+        background: var(--gradient-primary);
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+    }
+
+    .btn-login:hover::before {
+        left: 100%;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(78, 115, 223, 0.3);
+    }
+
+    .btn-create {
+        background: var(--gradient-success);
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .btn-create:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(28, 200, 138, 0.3);
+    }
+
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #6e707e;
+        margin: 25px 0;
+        font-weight: 500;
+    }
+
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 2px solid #e3e6f0;
+    }
+
+    .separator::before {
+        margin-right: 15px;
+    }
+
+    .separator::after {
+        margin-left: 15px;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        border: 2px solid #e3e6f0;
+        margin-right: 10px;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .security-badge {
+        background: rgba(28, 200, 138, 0.1);
+        border: 2px solid var(--success-color);
+        border-radius: 20px;
+        padding: 8px 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: var(--border-radius);
+        border: none;
+        box-shadow: var(--box-shadow);
+    }
+
+    .modal-header {
+        background: var(--gradient-primary);
+        color: white;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        border: none;
+        padding: 25px;
+    }
+
+    .modal-body {
+        padding: 30px;
+    }
+
+    .modal-footer {
+        border: none;
+        padding: 25px;
+        background: var(--light-bg);
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .login-container {
+            padding: 15px;
+        }
+        
+        .login-header {
+            padding: 30px 20px;
+        }
+        
+        .login-body {
+            padding: 30px 20px;
+        }
+        
+        .login-logo {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .login-logo i {
+            font-size: 2rem;
+        }
+        
+        .modal-dialog {
+            margin: 20px;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Custom checkbox */
+    .form-check {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-label {
+        margin-left: 10px;
+        font-weight: 500;
+        color: var(--dark-bg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2 class="mb-2">Espace Administrateur</h2>
+            <p class="mb-0 opacity-90">Institut du Développement Durable</p>
+        </div>
+        
+        <div class="login-body">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                    <div>{{ message }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            
+            <form method="POST" action="{% url 'admin_login_page' %}" id="loginForm">
+                {% csrf_token %}
+                
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                
+                <div class="mb-4">
+                    <label for="username" class="form-label fw-semibold">
+                        <i class="fas fa-user me-2 text-primary"></i>Nom d'utilisateur
+                    </label>
+                    <input type="text" class="form-control" id="username" name="username" 
+                           placeholder="Entrez votre nom d'utilisateur" required autofocus
+                           autocomplete="username">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-semibold">
+                        <i class="fas fa-lock me-2 text-primary"></i>Mot de passe
+                    </label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="Entrez votre mot de passe" required
+                               autocomplete="current-password">
+                        <button type="button" class="btn password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Se souvenir de moi
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-login w-100 mb-3 text-white">
+                    <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                </button>
+                
+                <div class="separator">Accès administrateur</div>
+                
+                <div class="text-center">
+                    <button type="button" class="btn btn-create w-100 mb-3 text-white" data-bs-toggle="modal" data-bs-target="#createAdminModal">
+                        <i class="fas fa-user-plus me-2"></i>Créer un compte administrateur
+                    </button>
+                    
+                    <a href="{% url 'password_reset' %}" class="text-primary text-decoration-none small">
+                        <i class="fas fa-key me-1"></i>Mot de passe oublié ?
+                    </a>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4 pt-3 border-top">
+                <div class="security-badge d-inline-flex align-items-center">
+                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                    <span>Connexion sécurisée SSL</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de création de compte administrateur -->
+<div class="modal fade" id="createAdminModal" tabindex="-1" aria-labelledby="createAdminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAdminModalLabel">
+                    <i class="fas fa-user-plus me-2"></i>Créer un compte administrateur
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'creer_compte_admin' %}" id="createAdminForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="new_username" class="form-label fw-semibold">Nom d'utilisateur *</label>
+                        <input type="text" class="form-control" id="new_username" name="username" required
+                               placeholder="Choisissez un nom d'utilisateur">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_email" class="form-label fw-semibold">Adresse email *</label>
+                        <input type="email" class="form-control" id="new_email" name="email" required
+                               placeholder="exemple@institut.fr">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_password1" class="form-label fw-semibold">Mot de passe *</label>
+                        <input type="password" class="form-control" id="new_password1" name="password1" required
+                               placeholder="Minimum 8 caractères">
+                        <div class="form-text">Le mot de passe doit contenir au moins 8 caractères.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_password2" class="form-label fw-semibold">Confirmation du mot de passe *</label>
+                        <input type="password" class="form-control" id="new_password2" name="password2" required
+                               placeholder="Retapez votre mot de passe">
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser">
+                        <label class="form-check-label" for="is_superuser">
+                            Accès superutilisateur (accès complet)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Créer le compte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleButton = document.querySelector('.password-toggle');
+        const icon = toggleButton.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+            toggleButton.setAttribute('aria-label', 'Cacher le mot de passe');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+            toggleButton.setAttribute('aria-label', 'Afficher le mot de passe');
+        }
+    }
+    
+    // Gestion de la mémorisation des identifiants
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedUsername = localStorage.getItem('admin_username');
+        const savedRemember = localStorage.getItem('admin_remember');
+        
+        if (savedUsername && savedRemember === 'true') {
+            document.getElementById('username').value = savedUsername;
+            document.getElementById('remember').checked = true;
+        }
+        
+        // Animation du modal
+        $('#createAdminModal').on('show.bs.modal', function () {
+            $(this).find('.modal-content').addClass('animate__animated animate__fadeInUp');
+        });
+        
+        // Validation du formulaire de création
+        $('#createAdminForm').on('submit', function(e) {
+            const password1 = $('#new_password1').val();
+            const password2 = $('#new_password2').val();
+            
+            if (password1 !== password2) {
+                e.preventDefault();
+                alert('Les mots de passe ne correspondent pas.');
+                return false;
+            }
+            
+            if (password1.length < 8) {
+                e.preventDefault();
+                alert('Le mot de passe doit contenir au moins 8 caractères.');
+                return false;
+            }
+            
+            return true;
+        });
+
+        // Fermer le modal après soumission réussie
+        $('#createAdminForm').on('ajax:success', function() {
+            $('#createAdminModal').modal('hide');
+        });
+    });
+    
+    // Sauvegarde des identifiants
+    document.getElementById('loginForm').addEventListener('submit', function() {
+        const remember = document.getElementById('remember').checked;
+        const username = document.getElementById('username').value;
+        
+        if (remember && username) {
+            localStorage.setItem('admin_username', username);
+            localStorage.setItem('admin_remember', 'true');
+        } else {
+            localStorage.removeItem('admin_username');
+            localStorage.removeItem('admin_remember');
+        }
+    });
+    
+    // Effets visuels
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused');
+        });
+    });
+</script>
+{% endblock %}

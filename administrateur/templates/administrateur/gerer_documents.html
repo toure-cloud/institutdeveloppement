@@ -1,0 +1,232 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .document-management {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .document-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }
+    
+    .document-info {
+        flex: 1;
+    }
+    
+    .document-actions {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: #4a6fa5;
+        color: white;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .document-status {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+    
+    .status-present {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-absent {
+        background: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+<div class="document-management">
+    <h2><i class="fas fa-file-alt"></i> Gestion des Documents</h2>
+    
+    <div class="document-item">
+        <div class="document-info">
+            <h4>Photo d'identité</h4>
+            <span class="document-status {% if inscription.photo_identite %}status-present{% else %}status-absent{% endif %}">
+                {% if inscription.photo_identite %}Présent{% else %}Manquant{% endif %}
+            </span>
+        </div>
+        <div class="document-actions">
+            {% if inscription.photo_identite %}
+            <a href="{{ inscription.photo_identite.url }}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-eye"></i> Voir
+            </a>
+            {% endif %}
+            <button class="btn btn-success" onclick="openDocumentModal('photo_identite')">
+                <i class="fas fa-upload"></i> {% if inscription.photo_identite %}Remplacer{% else %}Ajouter{% endif %}
+            </button>
+        </div>
+    </div>
+    
+    <div class="document-item">
+        <div class="document-info">
+            <h4>Diplôme du Bac</h4>
+            <span class="document-status {% if inscription.bac_scan %}status-present{% else %}status-absent{% endif %}">
+                {% if inscription.bac_scan %}Présent{% else %}Manquant{% endif %}
+            </span>
+        </div>
+        <div class="document-actions">
+            {% if inscription.bac_scan %}
+            <a href="{{ inscription.bac_scan.url }}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-eye"></i> Voir
+            </a>
+            {% endif %}
+            <button class="btn btn-success" onclick="openDocumentModal('bac_scan')">
+                <i class="fas fa-upload"></i> {% if inscription.bac_scan %}Remplacer{% else %}Ajouter{% endif %}
+            </button>
+        </div>
+    </div>
+    
+    <div class="document-item">
+        <div class="document-info">
+            <h4>Diplôme de Licence</h4>
+            <span class="document-status {% if inscription.diplome_scan %}status-present{% else %}status-absent{% endif %}">
+                {% if inscription.diplome_scan %}Présent{% else %}Manquant{% endif %}
+            </span>
+        </div>
+        <div class="document-actions">
+            {% if inscription.diplome_scan %}
+            <a href="{{ inscription.diplome_scan.url }}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-eye"></i> Voir
+            </a>
+            {% endif %}
+            <button class="btn btn-success" onclick="openDocumentModal('diplome_scan')">
+                <i class="fas fa-upload"></i> {% if inscription.diplome_scan %}Remplacer{% else %}Ajouter{% endif %}
+            </button>
+        </div>
+    </div>
+    
+    <div class="document-item">
+        <div class="document-info">
+            <h4>Extrait de naissance</h4>
+            <span class="document-status {% if inscription.extrait_naissance %}status-present{% else %}status-absent{% endif %}">
+                {% if inscription.extrait_naissance %}Présent{% else %}Manquant{% endif %}
+            </span>
+        </div>
+        <div class="document-actions">
+            {% if inscription.extrait_naissance %}
+            <a href="{{ inscription.extrait_naissance.url }}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-eye"></i> Voir
+            </a>
+            {% endif %}
+            <button class="btn btn-success" onclick="openDocumentModal('extrait_naissance')">
+                <i class="fas fa-upload"></i> {% if inscription.extrait_naissance %}Remplacer{% else %}Ajouter{% endif %}
+            </button>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'espace_candidat' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Retour à l'espace candidat
+        </a>
+    </div>
+</div>
+
+<!-- Modal pour la gestion des documents -->
+<div id="documentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalTitle"><i class="fas fa-file-upload"></i> Modifier le document</h3>
+        <form id="documentForm" class="document-form" method="POST" enctype="multipart/form-data" action="{% url 'modifier_document' %}">
+            {% csrf_token %}
+            <input type="hidden" id="documentType" name="document_type">
+            
+            <div class="file-input-container">
+                <label class="file-input-label" id="fileInputLabel">Sélectionner le fichier</label>
+                <input type="file" class="form-control" id="documentFile" name="document_file" required>
+            </div>
+            
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-upload"></i> Télécharger
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openDocumentModal(documentType) {
+        const modal = document.getElementById('documentModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const fileInputLabel = document.getElementById('fileInputLabel');
+        const documentTypeInput = document.getElementById('documentType');
+        
+        let title = "Modifier le document";
+        let label = "Sélectionner le fichier";
+        
+        switch(documentType) {
+            case 'photo_identite':
+                title = "Modifier la photo d'identité";
+                label = "Sélectionner une nouvelle photo (JPG, PNG - max 2MB)";
+                break;
+            case 'bac_scan':
+                title = "Modifier le diplôme du Bac";
+                label = "Sélectionner le nouveau fichier (PDF, JPG, PNG - max 5MB)";
+                break;
+            case 'diplome_scan':
+                title = "Modifier le diplôme de Licence";
+                label = "Sélectionner le nouveau fichier (PDF, JPG, PNG - max 5MB)";
+                break;
+            case 'extrait_naissance':
+                title = "Modifier l'extrait de naissance";
+                label = "Sélectionner le nouveau fichier (PDF, JPG, PNG - max 5MB)";
+                break;
+        }
+        
+        modalTitle.innerHTML = `<i class="fas fa-file-upload"></i> ${title}`;
+        fileInputLabel.textContent = label;
+        documentTypeInput.value = documentType;
+        
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('documentModal').style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('documentModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 13px; }
+        h2 { text-align: center; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .section { margin-bottom: 15px; }
+        .label { font-weight: bold; }
+        .photo { text-align: right; }
+        img.photo-id {
+            height: 140px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h2>Fiche d'Inscription - Formation {{ inscription.formation|upper }}</h2>
+
+    <div class="row">
+        <div>
+            <p><span class="label">Nom :</span> {{ inscription.nom }}<br>
+            <span class="label">Prénom :</span> {{ inscription.prenom }}<br>
+            <span class="label">Sexe :</span> {{ inscription.sexe }}<br>
+            <span class="label">Né(e) le :</span> {{ inscription.date_naissance }} à {{ inscription.lieu_naissance }}</p>
+        </div>
+        <div class="photo">
+            <img class="photo-id" src="{{ inscription.photo.url }}" alt="Photo d'identité">
+        </div>
+    </div>
+
+    <div class="section">
+        <span class="label">Email :</span> {{ inscription.email }}<br>
+        <span class="label">Email confirmation :</span> {{ inscription.email_confirmation }}<br>
+        <span class="label">Téléphone :</span> {{ inscription.telephone }}
+    </div>
+
+    <div class="section">
+        <span class="label">CMU :</span> {{ inscription.cmu }}<br>
+        <span class="label">CNI :</span> {{ inscription.cni }}
+    </div>
+
+    <div class="section">
+        <span class="label">Numéro de table Bac :</span> {{ inscription.table_bac }}<br>
+        <span class="label">Numéro du Bac :</span> {{ inscription.numero_bac }}<br>
+        <span class="label">École dernier diplôme :</span> {{ inscription.ecole_diplome }}
+    </div>
+</body>
+</html>

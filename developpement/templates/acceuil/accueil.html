@@ -1,0 +1,576 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4895ef;
+        --dark-color: #1a1a2e;
+        --light-color: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    }
+
+    /* Hero Slider */
+    #hero-slider {
+        border-radius: 0 0 20px 20px;
+        overflow: hidden;
+    }
+    .carousel-image {
+        height: 70vh;
+        object-fit: cover;
+        filter: brightness(0.6);
+    }
+    .carousel-caption {
+        bottom: 20%;
+        left: 10%;
+        right: 10%;
+        text-align: center;
+        background: rgba(0,0,0,0.6);
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    .carousel-caption h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    /* President Section */
+    #president {
+        background: #f8f9fa;
+        padding: 4rem 0;
+    }
+    #president .president-photo {
+        max-width: 370px;
+        border-radius: 3%;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    #president .speech {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    #president h2 {
+        color: var(--primary-color);
+    }
+
+    /* Check Items */
+    .check-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border-left: 4px solid #28a745;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .check-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        background: linear-gradient(135deg, #e8f2ff 0%, #d9e8ff 100%);
+    }
+    .check-item i {
+        font-size: 1.2rem;
+        min-width: 25px;
+    }
+
+    /* Partners Section */
+    .partners-section {
+        background: white;
+        padding: 5rem 0;
+    }
+    
+    .partner-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.25s ease;
+        background: white;
+        height: 100%;
+        padding: 1.5rem;
+    }
+    
+    .partner-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(67, 97, 238, 0.18);
+    }
+    
+    .partner-logo {
+        height: 70px;
+        object-fit: contain;
+        filter: grayscale(0.2);
+        transition: filter 0.3s ease;
+    }
+    
+    .partner-card:hover .partner-logo {
+        filter: grayscale(0);
+    }
+
+    /* Team Section */
+    .team-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .carousel-image {
+            height: 50vh;
+        }
+        .carousel-caption h2 {
+            font-size: 1.5rem;
+        }
+        .carousel-caption {
+            left: 5%;
+            right: 5%;
+            bottom: 15%;
+        }
+        #president .president-photo {
+            max-width: 300px;
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+<!-- Hero Slider -->
+<section id="hero-slider">
+    <div id="sliderFeaturedPosts" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for img, slogan in images_and_slogans %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{% static 'assets/img/'|add:img %}" 
+                     class="d-block w-100 carousel-image" 
+                     alt="{{ slogan }}">
+                <div class="carousel-caption animate__animated animate__fadeInUp">
+                    <h2>{{ slogan }}</h2>
+                    <a href="#presentation" class="btn btn-light btn-lg mt-3 shadow">
+                        <i class="fas fa-arrow-down"></i> Découvrir
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+                <img src="{% static 'assets/img/default-slider.jpg' %}" 
+                     class="d-block w-100 carousel-image" 
+                     alt="Institut de Développement des Territoires">
+                <div class="carousel-caption animate__animated animate__fadeInUp">
+                    <h2>Bienvenue à l'IDT</h2>
+                    <a href="#presentation" class="btn btn-light btn-lg mt-3 shadow">
+                        <i class="fas fa-arrow-down"></i> Découvrir
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#sliderFeaturedPosts" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#sliderFeaturedPosts" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</section>
+
+<!-- Mot du Président -->
+<section id="president">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-md-4 text-center">
+                <img src="{% static 'assets/img/president.png' %}" alt="Président IDT" class="president-photo img-fluid">
+            </div>
+            <div class="col-md-8">
+                <h2 class="fw-bold mb-3">Mot du Président</h2>
+                <p class="speech">
+                    L’Institut de Développement des Territoires (IDT), structure académique rattachée à l’Université Polytechnique de Man (UPM), s’est donné pour vocation de former une nouvelle génération de leaders éclairés, aptes à impulser une transformation durable et harmonieuse de nos territoires.</p>
+<p class="speech">Par le biais de ses programmes d’enseignement, de ses travaux de recherche et de ses partenariats stratégiques, l’Institut entend contribuer de manière significative à l’avancement des connaissances scientifiques, à la dynamisation de l’économie locale et nationale, ainsi qu’à l’amélioration des conditions de vie des populations.
+Ensemble, œuvrons à faire de nos territoires des espaces d’innovation, de croissance inclusive et de rayonnement.</p>
+                <p class="fw-bold text-primary">Professeur <strong> COULIBALY Lacina </strong> - Président de l'Université Polytechnique de Man</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Presentation Section -->
+<section id="presentation" class="presentation-section py-5">
+    <div class="container">
+        <div class="row justify-content-center text-center mb-5">
+            <div class="col-lg-10">
+                <h2 class="display-5 fw-bolder mb-3">
+                    Accélérer un <span class="text-primary">développement territorial durable</span> par la recherche, l'expertise et l'action
+                </h2>
+                <p class="lead mb-4">
+                    L'IDT accompagne les collectivités, institutions et acteurs privés dans la conception,
+                    la mise en œuvre et l'évaluation de politiques locales. Nous mobilisons des méthodes
+                    scientifiques, des données territoriales et une forte culture du partenariat pour créer
+                    de l'impact mesurable sur le terrain.
+                </p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-primary">🌍 Explorez nos domaines d'expertise</h2>
+                    <p class="text-muted">Découvrez les principaux axes qui guident nos actions et notre engagement.</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="check-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Études & observatoires territoriaux
+                        </div>
+                        <div class="check-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Planification & aménagement
+                        </div>
+                        <div class="check-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Transition écologique & résilience
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="check-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Développement économique local
+                        </div>
+                        <div class="check-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Renforcement des capacités
+                        </div>
+                        <div class="check-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Évaluation de politiques publiques
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section id="equipe" class="team-section py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="fw-bold text-primary">👥 Notre Équipe</h2>
+            <p class="lead text-muted">
+                Rencontrez nos <span class="fw-semibold text-dark">experts engagés</span> dans le développement territorial
+            </p>
+            <hr class="w-25 mx-auto border-primary opacity-75">
+        </div>
+
+        <div class="filter-buttons text-center mb-5">
+            <button class="btn btn-outline-primary active" data-filter="all">Tous</button>
+            <button class="btn btn-outline-success" data-filter="recherche">Recherche</button>
+            <button class="btn btn-outline-warning" data-filter="enseignement">Enseignement</button>
+            <button class="btn btn-outline-secondary" data-filter="admin">Administration</button>
+        </div>
+
+        <div class="row g-4 team-grid">
+            {% for member in team_members %}
+            <div class="col-xl-3 col-lg-4 col-md-6" data-category="{{ member.category }}">
+                <div class="card h-100 team-card">
+                    <div class="card-img-top overflow-hidden position-relative ratio ratio-1x1">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" 
+                             class="object-fit-cover" 
+                             alt="{{ member.full_name }}"
+                             loading="lazy">
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-light h-100">
+                            <i class="fas fa-user fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-3">
+                            <h3 class="h5 mb-1 fw-bold">{{ member.full_name }}</h3>
+                            <p class="text-muted small mb-0">{{ member.title }}</p>
+                        </div>
+
+                        <div class="mt-auto">
+                            <button type="button" 
+                                    class="btn btn-outline-primary w-100" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#memberModal"
+                                    data-member-id="{{ member.id }}"
+                                    data-member-fullname="{{ member.full_name }}"
+                                    data-member-title="{{ member.title }}"
+                                    data-member-photo="{{ member.photo.url|default:'' }}"
+                                    data-member-bio="{{ member.bio|default:'' }}"
+                                    data-member-category="{{ member.get_category_display }}"
+                                    data-member-linkedin="{{ member.linkedin_url|default:'' }}"
+                                    data-member-researchgate="{{ member.researchgate_url|default:'' }}">
+                                <i class="fas fa-eye me-2"></i>Voir le profil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Aucun membre d'équipe pour le moment.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Partners Section -->
+<section id="partenaires" class="partners-section py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="fw-bold text-primary">🤝 Nos Partenaires</h2>
+            <p class="lead text-muted">
+                Découvrez nos <span class="fw-semibold text-dark">collaborateurs institutionnels et privés</span> 
+                qui nous accompagnent dans le développement territorial
+            </p>
+            <hr class="w-25 mx-auto border-primary opacity-75">
+        </div>
+
+        <div class="filter-buttons text-center mb-5">
+            <button class="btn btn-outline-primary active" data-partner-filter="all">Tous</button>
+            <button class="btn btn-outline-primary" data-partner-filter="academique">Académiques</button>
+            <button class="btn btn-outline-primary" data-partner-filter="institutionnel">Institutionnels</button>
+            <button class="btn btn-outline-primary" data-partner-filter="prive">Privés</button>
+        </div>
+
+        <div class="row g-4" id="partnersGrid">
+            {% for partner in partenaires %}
+            <div class="col-md-4 col-lg-3" data-category="{{ partner.category }}">
+                <div class="partner-card">
+                    <div class="text-center mb-3">
+                        {% if partner.logo %}
+                        <img src="{{ partner.logo.url }}" 
+                             class="partner-logo" 
+                             alt="{{ partner.nom }}"
+                             loading="lazy">
+                        {% else %}
+                        <i class="fas fa-handshake fa-3x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <h5 class="text-center">{{ partner.nom }}</h5>
+                    <span class="badge bg-light text-dark d-block mx-auto mb-3" style="width: fit-content;">
+                        {{ partner.get_category_display }}
+                    </span>
+                    
+                    <p class="text-muted small text-center">{{ partner.description|truncatewords:15 }}</p>
+                    
+                    {% if partner.website %}
+                    <div class="text-center mt-3">
+                        <a href="{{ partner.website }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="btn btn-sm btn-outline-primary">
+                            Visiter le site
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Aucun partenaire pour le moment.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Member Modal -->
+<div class="modal fade member-modal" id="memberModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="memberModalTitle">Chargement...</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div id="memberPhotoContainer">
+                            <img id="memberPhoto" class="img-fluid rounded shadow mb-3" alt="" style="width:100%;height:250px;object-fit:cover;">
+                        </div>
+                        <div id="memberSocialLinks" class="d-flex justify-content-center gap-3 mt-3"></div>
+                        <div class="card info-card mt-3">
+                            <div class="card-body">
+                                <h6><i class="fas fa-info-circle me-2 text-primary"></i> Informations</h6>
+                                <ul class="list-unstyled mt-2">
+                                    <li class="mb-2">
+                                        <strong>Catégorie:</strong>
+                                        <span id="memberCategory" class="badge bg-primary ms-2"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h4 id="memberJobTitle" class="text-muted mb-3"></h4>
+                        <div id="memberBio" class="mb-4"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== TEAM MEMBER FILTER =====
+    document.querySelectorAll('.filter-buttons [data-filter]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            const members = document.querySelectorAll('.team-grid [data-category]');
+            
+            document.querySelectorAll('.filter-buttons [data-filter]').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            members.forEach(member => {
+                if (filter === 'all' || member.dataset.category === filter) {
+                    member.style.display = 'block';
+                    setTimeout(() => {
+                        member.style.opacity = '1';
+                        member.style.transform = 'translateY(0)';
+                    }, 50);
+                } else {
+                    member.style.opacity = '0';
+                    member.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        member.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+    });
+    
+    // ===== PARTNERS FILTER =====
+    document.querySelectorAll('.filter-buttons [data-partner-filter]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filter = this.dataset.partnerFilter;
+            const partners = document.querySelectorAll('#partnersGrid [data-category]');
+            
+            document.querySelectorAll('.filter-buttons [data-partner-filter]').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            partners.forEach(partner => {
+                partner.style.display = (filter === 'all' || partner.dataset.category === filter) ? 'block' : 'none';
+            });
+        });
+    });
+    
+    // ===== MEMBER MODAL =====
+    const memberModal = document.getElementById('memberModal');
+    if (memberModal) {
+        memberModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            
+            // Récupérer les données depuis les attributs data
+            const member = {
+                full_name: button.getAttribute('data-member-fullname'),
+                title: button.getAttribute('data-member-title'),
+                photo: button.getAttribute('data-member-photo'),
+                bio: button.getAttribute('data-member-bio'),
+                category: button.getAttribute('data-member-category'),
+                linkedin: button.getAttribute('data-member-linkedin'),
+                researchgate: button.getAttribute('data-member-researchgate')
+            };
+            
+            // Mettre à jour le contenu de la modal
+            document.getElementById('memberModalTitle').textContent = member.full_name;
+            
+            // Photo
+            const photoContainer = document.getElementById('memberPhoto');
+            if (member.photo) {
+                photoContainer.src = member.photo;
+                photoContainer.alt = member.full_name;
+                photoContainer.style.display = 'block';
+            } else {
+                photoContainer.parentElement.innerHTML = `
+                    <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height:250px;">
+                        <i class="fas fa-user-circle fa-5x text-muted"></i>
+                    </div>
+                `;
+            }
+            
+            // Titre
+            document.getElementById('memberJobTitle').textContent = member.title || 'Aucun titre renseigné';
+            
+            // Bio
+            const bioContainer = document.getElementById('memberBio');
+            if (member.bio && member.bio.trim() !== '') {
+                bioContainer.innerHTML = `<p class="lead">${member.bio}</p>`;
+            } else {
+                bioContainer.innerHTML = '<p class="text-muted">Biographie non disponible</p>';
+            }
+            
+            // Catégorie
+            document.getElementById('memberCategory').textContent = member.category || 'Non spécifié';
+            
+            // Liens sociaux
+            const socialLinksContainer = document.getElementById('memberSocialLinks');
+            socialLinksContainer.innerHTML = '';
+            
+            if (member.linkedin && member.linkedin.trim() !== '') {
+                socialLinksContainer.innerHTML += `
+                    <a href="${member.linkedin}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                `;
+            }
+            
+            if (member.researchgate && member.researchgate.trim() !== '') {
+                socialLinksContainer.innerHTML += `
+                    <a href="${member.researchgate}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-sm">
+                        <i class="fab fa-researchgate"></i> ResearchGate
+                    </a>
+                `;
+            }
+        });
+    }
+
+    // Animation au scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observer les éléments à animer
+    document.querySelectorAll('.check-item, .team-card, .partner-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+});
+</script>
+{% endblock %}

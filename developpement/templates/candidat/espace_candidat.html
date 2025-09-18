@@ -1,0 +1,611 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #6b8cae;
+        --dark-bg: #1a1e29;
+        --card-bg: #252b3a;
+        --text-color: #e0e5ec;
+        --hover-color: #3a5a80;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+    }
+
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: 12px;
+    }
+
+    .user-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 3rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(74, 111, 165, 0.3);
+    }
+
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-info {
+        margin-left: 2rem;
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-name {
+        font-size: 1.8rem;
+        margin: 0;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .user-status {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        background: rgba(74, 111, 165, 0.2);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .logout-btn {
+        background: transparent;
+        color: var(--text-color);
+        border: 1px solid var(--primary-color);
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .dashboard-card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border-color: rgba(74, 111, 165, 0.3);
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+    }
+
+    .card-title i {
+        margin-right: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    .card-content {
+        line-height: 1.7;
+        color: rgba(224, 229, 236, 0.8);
+    }
+
+    .card-content p {
+        margin-bottom: 0.8rem;
+    }
+
+    .card-content strong {
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background: var(--hover-color);
+        color: white;
+    }
+
+    .btn-success {
+        background: var(--success-color);
+    }
+
+    .btn-success:hover {
+        background: #218838;
+    }
+
+    .document-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .document-list li {
+        padding: 0.3rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .document-list i {
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .text-success {
+        color: var(--success-color);
+    }
+    
+    .text-missing {
+        color: var(--danger-color);
+    }
+
+    @media (max-width: 798px) {
+        .user-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .user-info {
+            flex-direction: column;
+            margin-left: 0;
+            margin-top: 1rem;
+            align-items: center;
+        }
+        
+        .logout-btn {
+            margin-top: 1rem;
+        }
+    }
+
+    .formation-details {
+        margin-top: 2rem;
+    }
+    
+    .detail-section {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .detail-section h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .detail-section h3 i {
+        margin-right: 0.8rem;
+    }
+    
+    .module-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .module-item {
+        padding: 0.8rem;
+        margin-bottom: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .module-title {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+    
+    .module-duration {
+        font-size: 0.9rem;
+        color: rgba(224, 229, 236, 0.7);
+    }
+    
+    .download-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .download-btn:hover {
+        background: var(--hover-color);
+        color: white;
+    }
+    
+    .download-btn i {
+        margin-right: 0.5rem;
+    }
+    
+    .no-data {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(224, 229, 236, 0.6);
+    }
+    
+    .no-data i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-content {
+        background-color: var(--card-bg);
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+    }
+
+    .close-modal {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+    }
+
+    .close-modal:hover {
+        color: var(--text-color);
+    }
+
+    .document-form {
+        margin-top: 1.5rem;
+    }
+
+    .file-input-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .file-input-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .convocation-info {
+        background: rgba(74, 111, 165, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .convocation-info p {
+        margin: 0.5rem 0;
+    }
+</style>
+
+<!-- Chargement des icônes FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="dashboard-container">
+    <div class="user-header">
+        {% if inscription and inscription.photo_identite %}
+            <img src="{{ inscription.photo_identite.url }}" alt="Photo d'identité de {{ inscription.prenom }} {{ inscription.nom }}" class="user-avatar">
+        {% else %}
+            <img src="{% static 'images/default-avatar.jpg' %}" alt="Photo profil par défaut" class="user-avatar">
+        {% endif %}
+        
+        <div class="user-info">
+            <div>
+                <h1 class="user-name">{{ inscription.prenom }} {{ inscription.nom }}</h1>
+                <span class="user-status">Candidat en {{ inscription.formation|title }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-cards">
+        <!-- Carte Informations Personnelles -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-user"></i> Informations Personnelles</h3>
+            <div class="card-content">
+                <p><strong>Email :</strong> {{ inscription.email }}</p>
+                <p><strong>Téléphone :</strong> {{ inscription.telephone|default:"Non renseigné" }}</p>
+                <p><strong>Date de naissance :</strong> {{ inscription.date_naissance|date:"d/m/Y"|default:"Non renseignée" }}</p>
+                <p><strong>CMU:</strong> {{ inscription.cmu|default:"Non renseignée" }}</p>
+            </div>
+            <a href="{% url 'modifier_profil' %}" class="action-btn">Modifier</a>
+        </div>
+
+        <!-- Carte Formation -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Formation</h3>
+            <div class="card-content">
+                <p><strong>Formation :</strong> {{ inscription.formation|title }}</p>
+                <p><strong>Date d'inscription :</strong> {{ inscription.date_inscription|date:"d/m/Y"|default:"Non renseignée" }}</p>
+                {% if formation %}
+                    <p><strong>Prochaine session :</strong> {{ formation.prochaine_session|date:"d/m/Y"|default:"Non programmée" }}</p>
+                {% endif %}
+            </div>
+            {% if formation %}
+                <a href="#" class="action-btn">Voir le programme</a>
+            {% endif %}
+        </div>
+
+        <!-- Carte Documents -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-file-alt"></i> Mes Documents</h3>
+            <div class="card-content">
+                <ul class="document-list">
+                    <li>
+                        <span>
+                            <i class="fas {% if inscription.photo_identite %}fa-check-circle text-success{% else %}fa-times-circle text-missing{% endif %}"></i> 
+                            Photo d'identité
+                        </span>
+                        <button class="action-btn btn-sm" onclick="openDocumentModal('photo_identite')">Modifier</button>
+                    </li>
+                    <li>
+                        <span>
+                            <i class="fas {% if inscription.bac_scan %}fa-check-circle text-success{% else %}fa-times-circle text-missing{% endif %}"></i> 
+                            Bac
+                        </span>
+                        <button class="action-btn btn-sm" onclick="openDocumentModal('bac_scan')">Modifier</button>
+                    </li>
+                    <li>
+                        <span>
+                            <i class="fas {% if inscription.diplome_scan %}fa-check-circle text-success{% else %}fa-times-circle text-missing{% endif %}"></i> 
+                            Diplôme
+                        </span>
+                        <button class="action-btn btn-sm" onclick="openDocumentModal('diplome_scan')">Modifier</button>
+                    </li>
+                    <li>
+                        <span>
+                            <i class="fas {% if inscription.extrait_naissance %}fa-check-circle text-success{% else %}fa-times-circle text-missing{% endif %}"></i> 
+                            Extrait de naissance
+                        </span>
+                        <button class="action-btn btn-sm" onclick="openDocumentModal('extrait_naissance')">Modifier</button>
+                    </li>
+                </ul>
+                <p>Complétion: {{ completion|floatformat:0 }}%</p>
+            </div>
+            <button class="action-btn" onclick="openDocumentModal('all')">Gérer mes documents</button>
+        </div>
+
+        <!-- Carte Sécurité -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-lock"></i> Sécurité</h3>
+            <div class="card-content">
+                <p><strong>Dernière connexion :</strong> {{ request.user.last_login|date:"d/m/Y à H:i"|default:"Jamais" }}</p>
+                <p><strong>Statut du compte :</strong> Actif</p>
+                <p><strong>Membre depuis :</strong> {{ request.user.date_joined|date:"d/m/Y" }}</p>
+            </div>
+            <a href="{% url 'password_change' %}" class="action-btn">Changer le mot de passe</a>
+        </div>
+
+        <!-- Carte Convocation -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-file-pdf"></i> Convocation</h3>
+            <div class="card-content">
+                {% if convocation_exam %}
+                <div class="convocation-info">
+                    <p><strong>Date :</strong> {{ convocation_exam.date_examen|date:"d/m/Y" }}</p>
+                    <p><strong>Heure :</strong> {{ convocation_exam.heure_examen }}</p>
+                    <p><strong>Lieu :</strong> {{ convocation_exam.lieu_examen }}</p>
+                    <p><strong>Salle :</strong> {{ convocation_exam.salle|default:"À préciser" }}</p>
+                </div>
+                {% else %}
+                <p>Votre convocation n'est pas encore disponible.</p>
+                {% endif %}
+            </div>
+            {% if convocation_exam %}
+            <a href="{% url 'generer_convocation' %}" class="action-btn btn-success" target="_blank">
+                <i class="fas fa-download"></i> Télécharger la convocation
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Carte Programme de Formation -->
+        <div class="dashboard-card">
+            <h3 class="card-title"><i class="fas fa-calendar-alt"></i> Programme de Formation</h3>
+            <div class="card-content">
+                {% if programme %}
+                    <p><strong>Durée totale :</strong> {{ programme.duree_totale }} heures</p>
+                    <p><strong>Début :</strong> {{ programme.date_debut|date:"d/m/Y" }}</p>
+                    <p><strong>Fin :</strong> {{ programme.date_fin|date:"d/m/Y" }}</p>
+                    <p><strong>Nombre de modules :</strong> {{ programme.nombre_modules }}</p>
+                {% else %}
+                    <p>Programme non disponible pour le moment.</p>
+                {% endif %}
+            </div>
+            {% if programme %}
+                <a href="{% url 'details_programme' %}" class="action-btn">Voir le détail</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal pour la gestion des documents -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle"><i class="fas fa-file-upload"></i> Modifier le document</h3>
+            <form id="documentForm" class="document-form" method="POST" enctype="multipart/form-data" action="{% url 'modifier_document' %}">
+                {% csrf_token %}
+                <input type="hidden" id="documentType" name="document_type">
+                
+                <div class="file-input-container">
+                    <label class="file-input-label" id="fileInputLabel">Sélectionner le fichier</label>
+                    <input type="file" class="form-control" id="documentFile" name="document_file" required>
+                </div>
+                
+                <button type="submit" class="action-btn">
+                    <i class="fas fa-upload"></i> Télécharger
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animation douce au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.dashboard-card, .detail-section');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+
+    // Gestion du modal de documents
+    function openDocumentModal(documentType) {
+        const modal = document.getElementById('documentModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const fileInputLabel = document.getElementById('fileInputLabel');
+        const documentTypeInput = document.getElementById('documentType');
+        
+        // Configurer le modal selon le type de document
+        let title = "Modifier le document";
+        let label = "Sélectionner le fichier";
+        
+        switch(documentType) {
+            case 'photo_identite':
+                title = "Modifier la photo d'identité";
+                label = "Sélectionner une nouvelle photo (JPG, PNG - max 2MB)";
+                break;
+            case 'bac_scan':
+                title = "Modifier le diplôme du Bac";
+                label = "Sélectionner le nouveau fichier (PDF, JPG, PNG - max 5MB)";
+                break;
+            case 'diplome_scan':
+                title = "Modifier le diplôme de Licence";
+                label = "Sélectionner le nouveau fichier (PDF, JPG, PNG - max 5MB)";
+                break;
+            case 'extrait_naissance':
+                title = "Modifier l'extrait de naissance";
+                label = "Sélectionner le nouveau fichier (PDF, JPG, PNG - max 5MB)";
+                break;
+            case 'all':
+                title = "Gérer mes documents";
+                label = "Sélectionner le type de document à modifier d'abord";
+                break;
+        }
+        
+        modalTitle.innerHTML = `<i class="fas fa-file-upload"></i> ${title}`;
+        fileInputLabel.textContent = label;
+        documentTypeInput.value = documentType;
+        
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('documentModal').style.display = "none";
+    }
+
+    // Fermer le modal si on clique en dehors
+    window.onclick = function(event) {
+        const modal = document.getElementById('documentModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // Validation du formulaire de documents
+    document.getElementById('documentForm').addEventListener('submit', function(e) {
+        const documentType = document.getElementById('documentType').value;
+        const fileInput = document.getElementById('documentFile');
+        
+        if (documentType === 'all') {
+            e.preventDefault();
+            alert('Veuillez sélectionner un type de document spécifique.');
+            return;
+        }
+        
+        if (!fileInput.files || fileInput.files.length === 0) {
+            e.preventDefault();
+            alert('Veuillez sélectionner un fichier.');
+            return;
+        }
+        
+        // Validation de la taille du fichier selon le type
+        const file = fileInput.files[0];
+        const maxSize = documentType === 'photo_identite' ? 2 : 5; // MB
+        
+        if (file.size > maxSize * 1024 * 1024) {
+            e.preventDefault();
+            alert(`Le fichier est trop volumineux. Taille maximum: ${maxSize}MB`);
+            return;
+        }
+    });
+</script>
+{% endblock %}

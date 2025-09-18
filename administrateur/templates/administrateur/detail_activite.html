@@ -1,0 +1,36 @@
+{% extends "administrateur/base.html" %}
+{% load static %}
+
+{% block title %}Détails de l'Activité - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Détails de l'Activité
+                </h1>
+                <div class="btn-group">
+                    <a href="{% url 'gestion_activites' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Détails -->
+    <div class="row">
+        <div class="col-12 col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4>{{ activite.title }}</h4>
+                    <!-- Affichez les détails de l'activité -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

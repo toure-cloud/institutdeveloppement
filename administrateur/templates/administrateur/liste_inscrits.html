@@ -1,0 +1,505 @@
+{% extends "administrateur/base.html" %}
+{% load static %}
+
+{% block title %}Gestion des Inscrits - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-users me-2"></i>Gestion des Inscrits
+                </h1>
+                <div class="btn-group">
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Retour au dashboard
+                    </a>
+                    <a href="{% url 'exporter_inscrits' %}" class="btn btn-success">
+                        <i class="fas fa-download me-1"></i> Exporter
+                    </a>
+                </div>
+            </div>
+            <p class="text-muted">Liste complète des candidats inscrits - {{ inscriptions.count }} inscrit(s)</p>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Filtrer par statut</label>
+                            <select class="form-select" id="filterStatut">
+                                <option value="">Tous les statuts</option>
+                                <option value="V">Validés</option>
+                                <option value="E">En attente</option>
+                                <option value="R">Rejetés</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Filtrer par formation</label>
+                            <select class="form-select" id="filterFormation">
+                                <option value="">Toutes les formations</option>
+                                {% for formation in formations %}
+                                <option value="{{ formation }}">{{ formation }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Rechercher</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Nom, prénom, email...">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-outline-secondary w-100" id="resetFilters">
+                                <i class="fas fa-undo me-1"></i> Réinitialiser
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cartes de statistiques -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Inscriptions
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inscriptions.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Validées
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inscriptions_valides.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                En Attente
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ inscriptions_attente.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Formations différentes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ formations|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-graduation-cap fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des inscrits -->
+    <div class="card shadow">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Liste des Inscrits</h6>
+            <span class="badge bg-primary" id="filterCount">{{ inscriptions.count }} résultat(s)</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Nom & Prénom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Formation</th>
+                            <th>Date Inscription</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscrit in inscriptions %}
+                        <tr data-statut="{{ inscrit.statut }}" data-formation="{{ inscrit.formation|default:'' }}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if inscrit.photo_identite %}
+                                    <img src="{{ inscrit.photo_identite.url }}" alt="Photo" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" width="40" height="40" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ inscrit.nom }} {{ inscrit.prenom }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ inscrit.sexe }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ inscrit.email }}</td>
+                            <td>{{ inscrit.telephone|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ inscrit.formation|default:"Non spécifiée" }}</span>
+                            </td>
+                            <td>{{ inscrit.date_inscription|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if inscrit.statut == 'V' %}bg-success
+                                    {% elif inscrit.statut == 'E' %}bg-warning
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ inscrit.get_statut_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" title="Voir détails" onclick="openDetailsModal({{ inscrit.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    
+                                    {% if inscrit.statut == 'E' %}
+                                    <a href="{% url 'valider_inscrit' inscrit.id %}" class="btn btn-outline-success" title="Valider">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                    <a href="{% url 'rejeter_inscrit' inscrit.id %}" class="btn btn-outline-danger" title="Rejeter">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                    {% endif %}
+                                    
+                                    <button class="btn btn-outline-info" title="Contacter" onclick="openContactModal({{ inscrit.id }}, '{{ inscrit.email }}')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                    
+                                    <a href="{% url 'supprimer_inscrit' inscrit.id %}" class="btn btn-outline-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet inscrit ?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p>Aucun inscrit trouvé</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Détails -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-user me-2"></i>Détails complet de l'inscrit</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailsModalBody">
+                <!-- Contenu chargé dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Contact -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Contacter l'inscrit</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contactForm">
+                    <div class="mb-3">
+                        <label class="form-label">Destinataire</label>
+                        <input type="email" class="form-control" id="contactEmail" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sujet</label>
+                        <input type="text" class="form-control" id="contactSubject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" id="contactMessage" rows="5" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="sendEmail()">Envoyer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+
+<!-- DataTables JS -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+<script>
+    let dataTable;
+    let currentInscritId = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialisation DataTables
+        dataTable = $('#dataTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+            },
+            order: [[4, 'desc']],
+            pageLength: 25,
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    className: 'btn btn-sm btn-outline-secondary'
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn btn-sm btn-outline-primary'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn btn-sm btn-outline-success'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn btn-sm btn-outline-danger'
+                },
+                {
+                    extend: 'print',
+                    className: 'btn btn-sm btn-outline-info'
+                }
+            ]
+        });
+
+        // Filtres
+        $('#filterStatut, #filterFormation, #searchInput').on('keyup change', function() {
+            filterTable();
+        });
+
+        $('#resetFilters').on('click', function() {
+            $('#filterStatut, #filterFormation, #searchInput').val('');
+            dataTable.search('').draw();
+            dataTable.columns().search('').draw();
+            updateFilterCount();
+        });
+
+        updateFilterCount();
+    });
+
+    function filterTable() {
+        const statut = $('#filterStatut').val();
+        const formation = $('#filterFormation').val();
+        const search = $('#searchInput').val();
+
+        dataTable.column(5).search(statut);
+        dataTable.column(3).search(formation);
+        dataTable.search(search).draw();
+
+        updateFilterCount();
+    }
+
+    function updateFilterCount() {
+        const count = dataTable.rows({ search: 'applied' }).count();
+        $('#filterCount').text(count + ' résultat(s)');
+    }
+
+    function openDetailsModal(inscritId) {
+        currentInscritId = inscritId;
+        // Charger les détails via AJAX ou utiliser les données existantes
+        fetch(`/administrateur/inscrits/${inscritId}/details/`)
+            .then(response => response.json())
+            .then(data => {
+                $('#detailsModalBody').html(`
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            ${data.photo_identite ? 
+                                `<img src="${data.photo_identite}" class="img-fluid rounded mb-3" alt="Photo" style="max-height: 200px;">` : 
+                                '<div class="bg-secondary text-white rounded d-flex align-items-center justify-content-center mb-3" style="height: 200px;"><i class="fas fa-user fa-3x"></i></div>'
+                            }
+                            <h4>${data.nom} ${data.prenom}</h4>
+                            <p class="text-muted">${data.email}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="border-bottom pb-2"><i class="fas fa-info-circle me-2"></i>Informations personnelles</h6>
+                                    <p><strong>Sexe:</strong> ${data.sexe}</p>
+                                    <p><strong>Date de naissance:</strong> ${data.date_naissance}</p>
+                                    <p><strong>Lieu de naissance:</strong> ${data.lieu_naissance}</p>
+                                    <p><strong>Téléphone:</strong> ${data.telephone || '-'}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="border-bottom pb-2"><i class="fas fa-graduation-cap me-2"></i>Formation</h6>
+                                    <p><strong>Formation choisie:</strong> ${data.formation || 'Non spécifiée'}</p>
+                                    <p><strong>Statut:</strong> <span class="badge ${data.statut_class}">${data.statut_display}</span></p>
+                                    <p><strong>Date d'inscription:</strong> ${data.date_inscription}</p>
+                                </div>
+                            </div>
+                            
+                            <h6 class="border-bottom pb-2"><i class="fas fa-file me-2"></i>Documents</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Diplôme du Bac</h6>
+                                            ${data.bac_scan ? 
+                                                `<a href="${data.bac_scan}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download me-1"></i> Télécharger</a>` :
+                                                '<span class="text-muted">Non fourni</span>'
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Diplôme de Licence</h6>
+                                            ${data.diplome_scan ? 
+                                                `<a href="${data.diplome_scan}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download me-1"></i> Télécharger</a>` :
+                                                '<span class="text-muted">Non fourni</span>'
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Extrait de Naissance</h6>
+                                            ${data.extrait_naissance ? 
+                                                `<a href="${data.extrait_naissance}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download me-1"></i> Télécharger</a>` :
+                                                '<span class="text-muted">Non fourni</span>'
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Pièce d'Identité</h6>
+                                            ${data.cni ? `<p class="mb-1"><strong>Numéro:</strong> ${data.cni}</p>` : ''}
+                                            ${data.cmu ? `<p class="mb-1"><strong>CMU:</strong> ${data.cmu}</p>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            })
+            .catch(error => {
+                $('#detailsModalBody').html('<div class="alert alert-danger">Erreur lors du chargement des détails</div>');
+            });
+
+        $('#detailsModal').modal('show');
+    }
+
+    function openContactModal(inscritId, email) {
+        $('#contactEmail').val(email);
+        $('#contactSubject').val('');
+        $('#contactMessage').val('');
+        $('#contactModal').modal('show');
+    }
+
+    function sendEmail() {
+        const email = $('#contactEmail').val();
+        const subject = $('#contactSubject').val();
+        const message = $('#contactMessage').val();
+        
+        // Simuler l'envoi d'email
+        alert(`Email envoyé à ${email}\nSujet: ${subject}\nMessage: ${message}`);
+        $('#contactModal').modal('hide');
+    }
+</script>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-bottom: 1px solid #e3e6f0;
+        background-color: #f8f9fc;
+    }
+    .border-left-primary { border-left: 4px solid #4e73df !important; }
+    .border-left-success { border-left: 4px solid #1cc88a !important; }
+    .border-left-warning { border-left: 4px solid #f6c23e !important; }
+    .border-left-info { border-left: 4px solid #36b9cc !important; }
+    .text-xs { font-size: 0.7rem; }
+    .font-weight-bold { font-weight: 600; }
+    .text-gray-800 { color: #5a5c69 !important; }
+    .text-gray-300 { color: #dddfeb !important; }
+    .table th { border-top: none; font-weight: 600; color: #4e73df; }
+    .btn-group-sm .btn { padding: 0.25rem 0.5rem; }
+    .dt-buttons { margin-bottom: 1rem; }
+    .dt-buttons .btn { margin-right: 0.5rem; }
+</style>
+{% endblock %}

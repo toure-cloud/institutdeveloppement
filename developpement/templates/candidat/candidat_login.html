@@ -1,0 +1,216 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Background avec effet dégradé */
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    /* Carte principale avec effet glassmorphism */
+    .login-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-in-out;
+    }
+
+    /* Animation d'apparition */
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Header de la carte */
+    .card-header {
+        background: rgba(255, 255, 255, 0.1);
+        text-align: center;
+        padding: 2rem;
+        color: #fff;
+    }
+    .card-header h2 {
+        font-weight: 700;
+    }
+    .card-header p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    /* Contenu du formulaire */
+    .card-body {
+        padding: 2.5rem;
+        color: #fff;
+    }
+
+    /* Champs de formulaire */
+    .form-control {
+        border-radius: 10px;
+        padding: 14px 16px;
+        border: none;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.4);
+    }
+
+    /* Icônes dans les inputs */
+    .icon-input {
+        position: relative;
+    }
+    .icon-input i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #fff;
+        opacity: 0.7;
+        transition: color 0.3s;
+    }
+    .icon-input input {
+        padding-left: 45px;
+    }
+
+    /* Bouton de connexion */
+    .btn-login {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        color: #000;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-login:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(56, 249, 215, 0.4);
+    }
+
+    /* Checkbox */
+    .form-check-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    /* Lien mot de passe oublié */
+    .forgot-password {
+        color: #fff;
+        opacity: 0.8;
+        font-size: 0.9rem;
+        transition: opacity 0.3s;
+    }
+    .forgot-password:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+
+    /* Section inscription */
+    .signup-link a {
+        color: #43e97b;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .signup-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Messages d'erreur */
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.2);
+        border: none;
+        color: #fff;
+        border-left: 4px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <!-- Formulaire -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-5">
+                <div class="login-card card">
+                    <div class="card-header">
+                        <h2 class="mb-0">
+                            <i class="bi bi-person-circle me-2"></i>Espace Candidat
+                        </h2>
+                        <p>Connectez-vous pour accéder à votre espace personnel</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- Affichage des messages d'erreur -->
+                        {% if messages %}
+                            <div class="mb-4">
+                                {% for message in messages %}
+                                    <div class="alert alert-danger d-flex align-items-center">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <div>{{ message }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'candidat_login_page' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ next }}">
+
+                            <!-- Email - Changé le nom du champ pour correspondre à la vue -->
+                            <div class="mb-4 icon-input">
+                                <i class="bi bi-envelope-fill"></i>
+                                <input type="email" class="form-control" name="email" placeholder="Adresse email" required value="{{ request.POST.email }}">
+                            </div>
+
+                            <!-- Mot de passe -->
+                            <div class="mb-4 icon-input">
+                                <i class="bi bi-lock-fill"></i>
+                                <input type="password" class="form-control" name="password" placeholder="Mot de passe" required>
+                            </div>
+
+                            <!-- Remember -->
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">Se souvenir de moi</label>
+                            </div>
+
+                            <!-- Bouton -->
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-login">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                                </button>
+                            </div>
+
+                            <!-- Liens -->
+                            <div class="text-center">
+                                <a href="{% url 'password_reset' %}" class="forgot-password d-block mb-2">
+                                    <i class="bi bi-question-circle me-1"></i>Mot de passe oublié ?
+                                </a>
+                                <p class="signup-link mb-0">
+                                    Pas encore inscrit ? <a href="{% url 'formation' %}">Créer un compte</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

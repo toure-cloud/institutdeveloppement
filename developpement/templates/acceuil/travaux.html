@@ -1,0 +1,27 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Recherches Scientifiques</h1>
+    <p class="text-center mb-5">Découvrez les dernières recherches menées par nos enseignants-chercheurs dans divers domaines académiques.</p>
+
+    <!-- Liste des recherches sous forme de cartes -->
+    <div class="row">
+        {% for publication in publications %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ publication.titre }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ publication.auteur.nom }} {{ publication.auteur.prenom }} - {{ publication.auteur.profession }}</h6>
+                        <p class="card-text">{{ publication.contenu|truncatewords:20 }}</p>
+                        <!-- Lien vers la page de détail de la recherche -->
+                        <a href="{% url 'publication_detail' publication_id=publication.id %}" class="btn btn-outline-primary">Lire la recherche</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">Aucune publication scientifique disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

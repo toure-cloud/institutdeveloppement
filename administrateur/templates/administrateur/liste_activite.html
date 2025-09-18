@@ -1,0 +1,505 @@
+{% extends 'administrateur/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Activités - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1 text-gradient text-primary">
+                        <i class="fas fa-calendar-alt me-2"></i>Gestion des Activités
+                    </h1>
+                    <p class="text-muted mb-0">Liste complète des activités organisées</p>
+                </div>
+                <a href="{% url 'ajouter_activite' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nouvelle Activité
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Total Activités</h6>
+                            <h4 class="mb-0 text-primary">{{ activites.count }}</h4>
+                        </div>
+                        <div class="icon-shape bg-primary text-white rounded-3 p-3">
+                            <i class="fas fa-calendar fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">À venir</h6>
+                            <h4 class="mb-0 text-success">{{ activites_a_venir }}</h4>
+                        </div>
+                        <div class="icon-shape bg-success text-white rounded-3 p-3">
+                            <i class="fas fa-clock fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Passées</h6>
+                            <h4 class="mb-0 text-warning">{{ activites_passees }}</h4>
+                        </div>
+                        <div class="icon-shape bg-warning text-white rounded-3 p-3">
+                            <i class="fas fa-history fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Sans date</h6>
+                            <h4 class="mb-0 text-info">{{ activites_sans_date }}</h4>
+                        </div>
+                        <div class="icon-shape bg-info text-white rounded-3 p-3">
+                            <i class="fas fa-question fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg rounded-3">
+                <div class="card-header bg-white py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-dark fw-semibold">
+                            <i class="fas fa-list me-2 text-primary"></i>Liste des Activités
+                        </h6>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Rechercher..." style="max-width: 200px;">
+                            <button class="btn btn-sm btn-outline-primary" id="filterBtn">
+                                <i class="fas fa-filter me-1"></i>Filtrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="activitesTable">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4" style="width: 50px;">Image</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder">Titre & Description</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder">Catégorie</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder">Date</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder">Lieu</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder">Créé par</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activite in activites %}
+                                <tr class="activite-row">
+                                    <td class="ps-4">
+                                        {% with activite.images.first as first_image %}
+                                            {% if first_image %}
+                                            <img src="{{ first_image.image.url }}" 
+                                                 class="rounded-2" 
+                                                 alt="{{ activite.title }}"
+                                                 style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #f8f9fa;">
+                                            {% else %}
+                                            <div class="bg-light rounded-2 d-flex align-items-center justify-content-center"
+                                                 style="width: 40px; height: 40px; border: 2px dashed #dee2e6;">
+                                                <i class="fas fa-image text-muted" style="font-size: 0.8rem;"></i>
+                                            </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <h6 class="mb-0 text-dark text-sm fw-semibold">{{ activite.title|truncatewords:6 }}</h6>
+                                            <p class="text-xs text-muted mb-0">{{ activite.short_description|truncatewords:8 }}</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ activite.category }} px-3 py-2">
+                                            {{ activite.get_category_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-xs font-weight-bold {% if activite.date and activite.date < today %}text-warning{% else %}text-dark{% endif %}">
+                                            {{ activite.date|date:"d/m/Y"|default:"-" }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-xs text-muted">
+                                            {{ activite.location|default:"-"|truncatewords:3 }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-xs text-dark">
+                                            {{ activite.created_by.get_full_name|default:activite.created_by.username|truncatewords:2 }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'detail_activite' activite.id %}" 
+                                               class="btn btn-outline-info" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'modifier_activite' activite.id %}" 
+                                               class="btn btn-outline-warning" 
+                                               data-bs-toggle="tooltip" 
+                                               title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" 
+                                                    class="btn btn-outline-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#deleteModal{{ activite.id }}"
+                                                    title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ activite.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg">
+                                            <div class="modal-header bg-light">
+                                                <h6 class="modal-title text-dark fw-semibold">
+                                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                                    Confirmation de suppression
+                                                </h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="text-center mb-3">
+                                                    <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                                                    <h6 class="text-dark">Êtes-vous sûr de vouloir supprimer cette activité ?</h6>
+                                                    <p class="text-muted small mb-0">"{{ activite.title }}"</p>
+                                                    <p class="text-danger small mt-2"><i class="fas fa-exclamation-circle me-1"></i>Cette action est irréversible</p>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                <form action="{% url 'supprimer_activite' activite.id %}" method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-trash me-1"></i>Supprimer
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
+                                            <h6 class="text-muted mb-2">Aucune activité trouvée</h6>
+                                            <p class="text-muted small mb-3">Commencez par créer votre première activité</p>
+                                            <a href="{% url 'ajouter_activite' %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-plus me-1"></i>Créer une activité
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% if activites.has_other_pages %}
+                <div class="card-footer bg-white border-0">
+                    <nav aria-label="Pagination">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if activites.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ activites.previous_page_number }}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in activites.paginator.page_range %}
+                            <li class="page-item {% if activites.number == i %}active{% endif %}">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+                            
+                            {% if activites.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ activites.next_page_number }}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Activation des tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // Recherche en temps réel
+    const searchInput = document.getElementById('searchInput')
+    const activiteRows = document.querySelectorAll('.activite-row')
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase()
+        
+        activiteRows.forEach(row => {
+            const title = row.querySelector('h6').textContent.toLowerCase()
+            const description = row.querySelector('p').textContent.toLowerCase()
+            const category = row.querySelector('.badge').textContent.toLowerCase()
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm) || category.includes(searchTerm)) {
+                row.style.display = ''
+            } else {
+                row.style.display = 'none'
+            }
+        })
+    })
+
+    // Filtrage par catégorie
+    document.getElementById('filterBtn').addEventListener('click', function() {
+        // Implémentez la logique de filtrage ici
+        alert('Fonctionnalité de filtrage à implémenter')
+    })
+
+    // Animation au survol des lignes
+    activiteRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)'
+            this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)'
+            this.style.transition = 'all 0.3s ease'
+        })
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)'
+            this.style.boxShadow = 'none'
+        })
+    })
+})
+</script>
+
+<style>
+:root {
+    --primary-color: #4e73df;
+    --secondary-color: #6f42c1;
+    --success-color: #1cc88a;
+    --warning-color: #f6c23e;
+    --danger-color: #e74a3b;
+    --info-color: #36b9cc;
+    --light-bg: #f8f9fc;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-nature {
+    background: linear-gradient(45deg, #4CAF50, #8BC34A) !important;
+}
+.bg-gradient-culture {
+    background: linear-gradient(45deg, #FF9800, #FF5722) !important;
+}
+.bg-gradient-aventure {
+    background: linear-gradient(45deg, #2196F3, #3F51B5) !important;
+}
+.bg-gradient-education {
+    background: linear-gradient(45deg, #9C27B0, #673AB7) !important;
+}
+.bg-gradient-loisir {
+    background: linear-gradient(45deg, #E91E63, #F44336) !important;
+}
+
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 1rem 0.5rem;
+    border-color: #f8f9fa;
+}
+
+.activite-row {
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+}
+
+.activite-row:hover {
+    border-left-color: var(--primary-color);
+    background-color: var(--light-bg);
+}
+
+.btn-group .btn {
+    border-radius: 8px;
+    margin: 0 2px;
+    padding: 0.375rem 0.5rem;
+}
+
+.icon-shape {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+}
+
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-color: transparent;
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 3px;
+    border: none;
+    color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.375rem;
+        margin: 0 1px;
+    }
+    
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .card-header h6 {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    #searchInput {
+        max-width: 100% !important;
+    }
+    
+    .table th, .table td {
+        padding: 0.75rem 0.25rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-group .btn {
+        margin: 1px 0;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.activite-row {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+{% endblock %}

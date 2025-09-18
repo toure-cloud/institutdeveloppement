@@ -1,0 +1,290 @@
+{% extends 'acceuil/base.html' %}
+{% load static %}
+
+{% block title %}
+    Formations - Mon Application
+{% endblock %}
+
+{% block content %}
+<!-- HEADER avec effet amélioré -->
+<header class="formations-header text-white text-center py-6 position-relative overflow-hidden">
+    <div class="container position-relative z-1">
+        <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">🎓 Nos Formations</h1>
+        <p class="lead fs-5 mb-5 animate__animated animate__fadeInUp">
+            Des programmes adaptés pour étudiants, professionnels et passionnés.
+        </p>
+        <div class="hero-shape-1"></div>
+        <div class="hero-shape-2"></div>
+    </div>
+</header>
+
+<div class="container mt-5">
+    <!-- Description principale améliorée -->
+    <div class="card border-0 shadow-soft mb-5 rounded-4 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="card-body p-5">
+            <p class="lead text-center text-dark mb-0 description-principale">
+                L’accès à nos formations se fait par voie de concours.<br>
+                Peuvent être candidats : les étudiants, les professionnels en reconversion ou toute personne motivée et titulaire d’une Licence (L3/BAC+3) en Sciences Humaines, Sciences économiques ou Diplômes équivalents.<br>
+                Les préinscriptions s’effectuent exclusivement en ligne. Après étude des dossiers, les candidats retenus pourront télécharger leur convocation et le programme des épreuves.<br><br>
+                <span class="text-danger fw-bold">
+                    ⚠️ Toute tentative de fraude sera considérée comme un délit et entraînera des poursuites.
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Nouvelle section : Moyens de dispensation des cours améliorée -->
+    <section class="moyens-cours py-5 px-4 mb-5 bg-gradient-primary rounded-4 shadow-soft animate__animated animate__fadeIn">
+        <h2 class="text-center fw-bold text-white mb-4 display-6">📚 Moyens de dispensation des cours</h2>
+        <p class="text-light lead text-center mb-5">
+            Afin de garantir une formation complète et accessible à tous, nos cours sont dispensés selon plusieurs modalités adaptées aux besoins des apprenants.
+        </p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-soft h-100 card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-primary-soft mb-4 mx-auto">
+                            <i class="bi bi-building text-primary fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Cours en présentiel</h5>
+                        <p class="text-muted mb-0">
+                            Des séances en salle avec encadrement direct par nos formateurs qualifiés, pour favoriser l’échange et la pratique.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-soft h-100 card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-success-soft mb-4 mx-auto">
+                            <i class="bi bi-laptop text-success fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Cours en ligne</h5>
+                        <p class="text-muted mb-0">
+                            Un accès à notre plateforme e-learning avec vidéos, documents, quiz interactifs et forums de discussion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-soft h-100 card-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-wrapper bg-warning-soft mb-4 mx-auto">
+                            <i class="bi bi-people text-warning fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Ateliers pratiques</h5>
+                        <p class="text-muted mb-0">
+                            Des sessions pratiques et travaux dirigés pour développer des compétences concrètes et opérationnelles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Liste des formations améliorée -->
+    <h2 class="text-center fw-bold text-dark mb-5 display-6">✨ Nos Formations Disponibles</h2>
+    <div class="row g-4 mb-5">
+        {% for formation in formations %}
+        <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+            <div class="card border-0 shadow-soft rounded-4 formation-card p-4 h-100 animate__animated animate__zoomIn">
+                <div class="card-body d-flex flex-column">
+                    <!-- Icône formation améliorée -->
+                    <div class="icon-circle bg-gradient-primary mb-4 mx-auto">
+                        <i class="bi bi-mortarboard-fill text-white fs-4"></i>
+                    </div>
+
+                    <!-- Titre et infos améliorés -->
+                    <h5 class="card-title text-primary fw-bold text-center mb-3">{{ formation.nom }}</h5>
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="bi bi-clock me-2 text-primary"></i>
+                        <span class="text-dark"><strong>Durée :</strong> {{ formation.duree }} mois</span>
+                    </div>
+                    
+                    <!-- Bouton inscription amélioré -->
+                    <div class="mt-auto text-center pt-3">
+                        <a href="{% url 'inscription_formation' formation_type=formation.nom|slugify %}" class="btn btn-gradient-primary btn-inscription mt-2 px-4 fw-semibold py-2">
+                            <i class="bi bi-pencil-square me-2"></i> S'inscrire au concours
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Styles améliorés -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+    :root {
+        --primary-color: #4361ee;
+        --primary-dark: #3a0ca3;
+        --primary-light: #4895ef;
+        --secondary-color: #7209b7;
+        --success-color: #4cc9f0;
+        --light-bg: #f8f9fa;
+        --dark-text: #2b2d42;
+        --light-text: #6c757d;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --box-shadow-soft: 0 5px 20px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--light-bg);
+        color: var(--dark-text);
+        line-height: 1.6;
+    }
+
+    /* Header amélioré */
+    .formations-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        position: relative;
+        padding: 5rem 0;
+    }
+    
+    .formations-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("{% static 'assets/img/banner_formations.jpg' %}") center/cover no-repeat;
+        opacity: 0.15;
+        z-index: 0;
+    }
+    
+    .hero-shape-1, .hero-shape-2 {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+    
+    .hero-shape-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        right: -100px;
+    }
+    
+    .hero-shape-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -100px;
+        left: -50px;
+    }
+
+    .z-1 {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Carte formation améliorée */
+    .formation-card {
+        transition: var(--transition);
+        background-color: #fff;
+        border-top: 4px solid transparent;
+        background-clip: padding-box;
+    }
+    
+    .formation-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--box-shadow);
+        border-top-color: var(--primary-color);
+    }
+
+    /* Icône ronde améliorée */
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        margin: 0 auto;
+        transition: var(--transition);
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+
+    /* Bouton inscription amélioré */
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        transition: var(--transition);
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .btn-gradient-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        transform: translateY(-2px);
+    }
+
+    /* Section moyens des cours améliorée */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+    
+    .shadow-soft {
+        box-shadow: var(--box-shadow-soft);
+    }
+    
+    .card-hover {
+        transition: var(--transition);
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .bg-primary-soft {
+        background-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .bg-success-soft {
+        background-color: rgba(76, 201, 240, 0.1);
+    }
+    
+    .bg-warning-soft {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .formations-header {
+            padding: 3rem 0;
+        }
+        
+        .display-4 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-shape-1, .hero-shape-2 {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
