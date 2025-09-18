@@ -1,23 +1,25 @@
-# Fichiers Python
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-
-# Environnement virtuel
-venv/
-env/
+# Environments
 .env
+.venv
+env/
+venv/
+ENV/
 
-# Base de données SQLite (si utilisée)
-*.sqlite3
-
-# Fichiers de configuration locaux
-*.local
-
-# Fichiers statiques collectés
-staticfiles/
-
-# Fichiers de logs ou autres
+# Django
 *.log
 *.pot
+*.pyc
+__pycache__/
+media/
+staticfiles/
+db.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
